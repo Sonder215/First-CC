@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Thought — English major at TUST">
+  <title>Post · 文章</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+
+  <!-- Reading Progress Bar -->
+  <div class="reading-progress">
+    <div class="bar"></div>
+  </div>
+
+  <!-- Navigation -->
+  <nav class="nav">
+    <div class="nav-inner">
+      <div class="nav-brand">
+        <a href="index.html">L · K</a>
+      </div>
+      <ul class="nav-links">
+        <li><a href="index.html" data-page="home">Home</a></li>
+        <li><a href="about.html" data-page="about">About</a></li>
+        <li><a href="thoughts.html" data-page="thoughts">Thoughts</a></li>
+      </ul>
+      <button class="nav-toggle" aria-label="Toggle navigation">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- Post Content -->
+  <main>
+    <div class="container" id="post-container">
+      <!-- Rendered by JS -->
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="site-footer">
+    <p class="footer-quote">"Read the best books first, or you may not have a chance to read them at all." — Henry David Thoreau</p>
+    <p class="footer-info">
+      天津科技大学 · <span>外国语学院 英语系</span> · 2025–2029
+    </p>
+  </footer>
+
+  <script src="js/posts.js"></script>
+  <script src="js/main.js"></script>
+  <script>
+    (function() {
+      const container = document.getElementById('post-container');
+
+      // Get post ID from URL
+      const params = new URLSearchParams(window.location.search);
+      const postId = params.get('id');
+
+      const post = getPostById(postId);
+
+      if (!post) {
+        container.innerHTML = `
+          <div style="text-align: center; padding: var(--space-4xl) 0;">
+            <h2 style="margin-bottom: var(--space-md);">Post Not Found</h2>
+            <p style="color: var(--color-text-muted); margin-bottom: var(--space-xl);">
+              文章未找到。也许它还未被写下，或者在别处等待被发现。
+            </p>
+            <a href="thoughts.html" class="filter-btn active" style="display: inline-block; text-decoration: none;">
+              ← Back to Thoughts
+            </a>
+          </div>
+        `;
+        document.title = 'Post Not Found · 文章';
+        return;
+      }
+
+      // Set page title
+      document.title = `${post.title} · ${post.titleZh}`;
+
+      // Set meta description
+      const metaDesc = document.querySelector('meta[name="description"]');
+      if (metaDesc) {
+        metaDesc.setAttribute('content', post.excerpt);
+      }
+
+      // Render post
+      container.innerHTML = renderFullPost(post);
+
+      // Re-trigger scroll animations for any embedded fade-up elements
+      setTimeout(() => {
+        document.querySelectorAll('.fade-up').forEach(el => {
+          const rect = el.getBoundingClientRect();
+          if (rect.top < window.innerHeight) {
+            el.classList.add('visible');
+          }
+        });
+      }, 100);
+    })();
+  </script>
+</body>
+</html>
