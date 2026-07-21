@@ -1,0 +1,588 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 英语语料库</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html, body {
+            width: 100%; height: 100%;
+            overflow-x: hidden;
+            font-family: "Segoe UI", "PingFang SC", "Microsoft YaHei", sans-serif;
+            background: #0a0618;
+            color: #f5f0e8;
+            cursor: none;
+        }
+
+        /* —— 星空画布 —— */
+        #starfield {
+            position: fixed; inset: 0;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* —— 流星拖尾光标 —— */
+        #cursor-dot {
+            position: fixed;
+            width: 8px; height: 8px;
+            background: #fff8e7;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9999;
+            box-shadow: 0 0 12px 4px rgba(255, 215, 140, 0.8),
+                        0 0 30px 8px rgba(180, 120, 255, 0.4);
+            transform: translate(-50%, -50%);
+            transition: width 0.15s, height 0.15s;
+        }
+        .trail {
+            position: fixed;
+            width: 6px; height: 6px;
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 9998;
+            background: radial-gradient(circle, rgba(255,220,160,0.9), rgba(160,100,255,0.3));
+            transform: translate(-50%, -50%);
+        }
+
+        /* —— 主容器（毛玻璃 + 3D 视差） —— */
+        .page-wrap {
+            position: relative; z-index: 1;
+            min-height: 100vh;
+            display: flex; flex-direction: column; align-items: center;
+            padding: 40px 20px 60px;
+            perspective: 1200px;
+        }
+        .glass-panel {
+            width: 100%; max-width: 780px;
+            background: rgba(20, 12, 48, 0.55);
+            backdrop-filter: blur(22px) saturate(1.4);
+            -webkit-backdrop-filter: blur(22px) saturate(1.4);
+            border: 1px solid rgba(255, 230, 180, 0.18);
+            border-radius: 20px;
+            padding: 36px 40px;
+            box-shadow:
+                0 8px 40px rgba(0, 0, 0, 0.45),
+                inset 0 1px 0 rgba(255, 255, 255, 0.08);
+            transform-style: preserve-3d;
+            transition: transform 0.15s ease-out;
+            will-change: transform;
+        }
+
+        /* —— 导航 —— */
+        .nav-bar {
+            display: flex; justify-content: space-between; align-items: center;
+            margin-bottom: 28px;
+        }
+        .nav-bar h1 {
+            font-size: 1.55rem; font-weight: 700;
+            background: linear-gradient(135deg, #fff8e7, #e8c87a, #c9a0ff);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+            letter-spacing: 1px;
+        }
+        .home-link {
+            color: #e8c87a; text-decoration: none; font-size: 0.9rem;
+            border: 1px solid rgba(232, 200, 122, 0.4);
+            padding: 6px 16px; border-radius: 20px;
+            transition: background 0.25s, color 0.25s;
+            cursor: none;
+        }
+        .home-link:hover {
+            background: rgba(232, 200, 122, 0.18);
+            color: #fff8e7;
+        }
+
+        /* —— Tab 切换 —— */
+        .tabs {
+            display: flex; gap: 8px; margin-bottom: 16px;
+            background: rgba(255,255,255,0.04);
+            border-radius: 12px; padding: 5px;
+        }
+        .tab-btn {
+            flex: 1; padding: 10px 0; border: none; border-radius: 9px;
+            background: transparent; color: rgba(245,240,232,0.55);
+            font-size: 0.92rem; font-weight: 600; letter-spacing: 0.5px;
+            transition: all 0.25s; cursor: none;
+        }
+        .tab-btn.active {
+            background: linear-gradient(135deg, rgba(200,150,255,0.35), rgba(232,200,122,0.3));
+            color: #fff8e7;
+            box-shadow: 0 2px 12px rgba(180,120,255,0.25);
+        }
+        .tab-btn:hover:not(.active) { color: #e8c87a; }
+
+        /* —— 演示提示 —— */
+        .demo-notice {
+            text-align: center;
+            margin-bottom: 18px;
+            padding: 12px 18px;
+            background: rgba(200, 150, 255, 0.12);
+            border: 1px solid rgba(232, 200, 122, 0.4);
+            border-radius: 10px;
+            color: #e8c87a;
+            font-size: 0.84rem;
+            line-height: 1.65;
+            letter-spacing: 0.2px;
+            box-shadow: 0 0 20px rgba(180, 120, 255, 0.15);
+        }
+
+        /* —— 输入区 —— */
+        .input-area {
+            display: flex; gap: 10px; margin-bottom: 28px;
+        }
+        #user-input {
+            flex: 1; padding: 13px 18px;
+            background: rgba(255,255,255,0.07);
+            border: 1px solid rgba(255,230,180,0.22);
+            border-radius: 10px; color: #f5f0e8;
+            font-size: 0.95rem; outline: none;
+            transition: border-color 0.25s; cursor: none;
+        }
+        #user-input::placeholder { color: rgba(245,240,232,0.35); }
+        #user-input:focus { border-color: rgba(200,150,255,0.6); }
+        #generate-btn {
+            padding: 13px 26px;
+            background: linear-gradient(135deg, #7b5cff, #c9a0ff);
+            color: #fff; border: none; border-radius: 10px;
+            font-size: 0.95rem; font-weight: 600;
+            transition: opacity 0.25s, transform 0.15s; cursor: none;
+            white-space: nowrap;
+        }
+        #generate-btn:hover { opacity: 0.88; transform: translateY(-1px); }
+        #generate-btn:disabled { opacity: 0.45; transform: none; }
+
+        /* —— 结果区 —— */
+        #result-box {
+            min-height: 120px;
+            background: rgba(0,0,0,0.25);
+            border: 1px solid rgba(255,230,180,0.1);
+            border-radius: 12px;
+            padding: 22px;
+            line-height: 1.75;
+            font-size: 0.93rem;
+            overflow-y: auto; max-height: 520px;
+        }
+        #result-box .placeholder {
+            color: rgba(245,240,232,0.3); text-align: center; padding: 40px 0;
+        }
+        #result-box .loading {
+            color: #c9a0ff; text-align: center; padding: 40px 0;
+            animation: pulse 1.4s ease-in-out infinite;
+        }
+        @keyframes pulse {
+            0%, 100% { opacity: 0.5; } 50% { opacity: 1; }
+        }
+
+        /* 双语对照排版 */
+        .bilingual-line { margin-bottom: 14px; }
+        .bilingual-line .en {
+            color: #fff8e7; font-size: 1rem; font-weight: 500;
+        }
+        .bilingual-line .zh {
+            color: rgba(200,180,255,0.75); font-size: 0.88rem; margin-top: 2px;
+        }
+        .section-title {
+            background: linear-gradient(90deg, #e8c87a, #c9a0ff);
+            -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+            background-clip: text;
+            font-size: 1.05rem; font-weight: 700;
+            margin: 18px 0 10px; padding-bottom: 4px;
+            border-bottom: 1px solid rgba(232,200,122,0.2);
+        }
+        .section-title:first-child { margin-top: 0; }
+        .tag {
+            display: inline-block;
+            background: rgba(200,150,255,0.2);
+            color: #c9a0ff; font-size: 0.78rem;
+            padding: 2px 8px; border-radius: 4px; margin-right: 6px;
+        }
+        .error-msg { color: #ff8a8a; text-align: center; padding: 30px 0; }
+
+        /* 滚动条美化 */
+        #result-box::-webkit-scrollbar { width: 5px; }
+        #result-box::-webkit-scrollbar-track { background: transparent; }
+        #result-box::-webkit-scrollbar-thumb {
+            background: rgba(200,150,255,0.35); border-radius: 3px;
+        }
+
+        @media (max-width: 600px) {
+            .glass-panel { padding: 24px 18px; }
+            .tabs { flex-direction: column; }
+            .input-area { flex-direction: column; }
+            .nav-bar { flex-direction: column; gap: 12px; text-align: center; }
+        }
+    </style>
+</head>
+<body>
+
+<canvas id="starfield"></canvas>
+<div id="cursor-dot"></div>
+
+<div class="page-wrap">
+    <div class="glass-panel" id="glass-panel">
+        <!-- 导航 -->
+        <div class="nav-bar">
+            <h1>✨ AI 英语语料库</h1>
+            <a href="index.html" class="home-link">← 返回主页</a>
+        </div>
+
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab-btn active" data-tab="dict" onclick="switchTab('dict')">词典与造句</button>
+            <button class="tab-btn" data-tab="synonym" onclick="switchTab('synonym')">同义词替换</button>
+            <button class="tab-btn" data-tab="scene" onclick="switchTab('scene')">场景对话</button>
+        </div>
+
+        <!-- 演示提示 -->
+        <div class="demo-notice">🔒 演示模式：API密钥已隐藏，仅供展示视觉效果。如需测试AI语料生成功能，请在本地填入您的真实DeepSeek API密钥。</div>
+
+        <!-- 输入 -->
+        <div class="input-area">
+            <input type="text" id="user-input" placeholder="输入英文单词，如：deadline..." />
+            <button id="generate-btn" onclick="generateCorpus()">生成语料</button>
+        </div>
+
+        <!-- 结果 -->
+        <div id="result-box">
+            <div class="placeholder">选择功能并输入内容，点击「生成语料」开始</div>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ⚠️ 关键步骤：替换成你真实的 DeepSeek API 密钥
+    const API_KEY = "请在这里填入你的真实 DeepSeek 密钥";
+
+    /* ========== 状态 ========== */
+    let currentTab = 'dict';
+    const placeholders = {
+        dict:    '输入英文单词，如：deadline...',
+        synonym: '输入一句英文，如：I need to finish this ASAP...',
+        scene:   '输入场景，如：商务会议开场寒暄...'
+    };
+
+    function switchTab(tab) {
+        currentTab = tab;
+        document.querySelectorAll('.tab-btn').forEach(b => {
+            b.classList.toggle('active', b.dataset.tab === tab);
+        });
+        document.getElementById('user-input').placeholder = placeholders[tab];
+        document.getElementById('user-input').value = '';
+        document.getElementById('result-box').innerHTML =
+            '<div class="placeholder">选择功能并输入内容，点击「生成语料」开始</div>';
+    }
+
+    /* ========== 系统提示词 ========== */
+    const SYSTEM_PROMPTS = {
+        dict: `你是一位专业的英语教学助手。用户会输入一个英文单词或短语。请严格按以下格式返回（使用 Markdown）：
+
+## 释义
+- **词性**：...
+- **英文释义**：...
+- **中文释义**：...
+
+## 职场例句
+1. **英文**：...
+   **中文**：...
+2. **英文**：...
+   **中文**：...
+3. **英文**：...
+   **中文**：...
+
+要求：例句必须贴近真实职场场景，难度适中偏上。只返回上述内容，不要多余寒暄。`,
+
+        synonym: `你是一位资深英语写作教练。用户会输入一句英文。请提供 5 种更高级、更地道的英文改写方案。严格按以下格式返回：
+
+## 改写方案
+1. **英文**：...
+   **中文**：...
+   **亮点**：...
+2. **英文**：...
+   **中文**：...
+   **亮点**：...
+（共 5 条）
+
+要求：改写要自然地道，适合职场/学术场景。只返回上述内容。`,
+
+        scene: `你是一位商务英语情景对话专家。用户会输入一个场景描述。请生成一段 8-10 句的双语情景对话，并解释关键短语。严格按以下格式返回：
+
+## 情景对话
+A: **英文**
+   **中文**
+B: **英文**
+   **中文**
+（共 8-10 句，角色用 A/B 或具体职位）
+
+## 关键短语
+1. **短语**：... — **释义**：...
+2. **短语**：... — **释义**：...
+（列出 4-6 个）
+
+只返回上述内容，不要多余寒暄。`
+    };
+
+    /* ========== 调用 DeepSeek API ========== */
+    async function generateCorpus() {
+        const input = document.getElementById('user-input');
+        const text = input.value.trim();
+        if (!text) { input.focus(); return; }
+
+        const btn = document.getElementById('generate-btn');
+        const box = document.getElementById('result-box');
+        btn.disabled = true;
+        box.innerHTML = '<div class="loading">✨ AI 正在生成语料，请稍候...</div>';
+
+        try {
+            const resp = await fetch('https://api.deepseek.com/chat/completions', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${API_KEY}`
+                },
+                body: JSON.stringify({
+                    model: 'deepseek-chat',
+                    messages: [
+                        { role: 'system', content: SYSTEM_PROMPTS[currentTab] },
+                        { role: 'user', content: text }
+                    ],
+                    temperature: 0.7,
+                    max_tokens: 2000
+                })
+            });
+
+            if (!resp.ok) {
+                const err = await resp.json().catch(() => ({}));
+                throw new Error(err.error?.message || `HTTP ${resp.status}`);
+            }
+
+            const data = await resp.json();
+            const reply = data.choices?.[0]?.message?.content || '未获取到有效回复';
+            box.innerHTML = renderMarkdown(reply);
+        } catch (err) {
+            console.error(err);
+            box.innerHTML = `<div class="error-msg">⚠️ 请求失败：${escapeHtml(err.message)}<br>请检查 API 密钥或网络连接</div>`;
+        } finally {
+            btn.disabled = false;
+        }
+    }
+
+    /* ========== 简易 Markdown → HTML（双语对照） ========== */
+    function escapeHtml(str) {
+        return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+    }
+
+    function renderMarkdown(md) {
+        const lines = md.split('\n');
+        let html = '';
+        for (let raw of lines) {
+            let line = raw.trimEnd();
+            if (!line.trim()) { html += '<br>'; continue; }
+
+            // ## 标题
+            if (/^##\s+/.test(line)) {
+                html += `<div class="section-title">${escapeHtml(line.replace(/^##\s+/, ''))}</div>`;
+                continue;
+            }
+            // ### 小标题
+            if (/^###\s+/.test(line)) {
+                html += `<div class="section-title" style="font-size:0.95rem">${escapeHtml(line.replace(/^###\s+/, ''))}</div>`;
+                continue;
+            }
+
+            // 加粗处理
+            let processed = escapeHtml(line)
+                .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+
+            // 检测英文/中文行模式
+            if (/^\s*\d+[\.\)]\s*\*\*英文\*\*/.test(line) || /^\s*\*\*英文\*\*/.test(line)) {
+                html += `<div class="bilingual-line"><div class="en">${processed}</div>`;
+            } else if (/^\s*\*\*中文\*\*/.test(line)) {
+                html += `<div class="zh">${processed}</div></div>`;
+            } else if (/^\s*\*\*亮点\*\*/.test(line) || /^\s*\*\*释义\*\*/.test(line) || /^\s*—\s*\*\*释义\*\*/.test(line)) {
+                html += `<div class="zh" style="margin-bottom:10px">${processed}</div>`;
+            } else if (/^[A-Z][\w\s]*:\s*\*\*英文\*\*/.test(line) || /^[AB]:\s/.test(line)) {
+                // 对话行
+                html += `<div class="bilingual-line"><div class="en">${processed}</div>`;
+            } else if (/^-\s/.test(line)) {
+                html += `<div class="bilingual-line">${processed}</div>`;
+            } else {
+                html += `<div class="bilingual-line">${processed}</div>`;
+            }
+        }
+        return html;
+    }
+
+    // 回车发送
+    document.getElementById('user-input').addEventListener('keydown', e => {
+        if (e.key === 'Enter') generateCorpus();
+    });
+
+    /* ========== 星空粒子系统 ========== */
+    (function initStarfield() {
+        const canvas = document.getElementById('starfield');
+        const ctx = canvas.getContext('2d');
+        let W, H, stars = [], animId;
+
+        function resize() {
+            W = canvas.width = window.innerWidth;
+            H = canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resize);
+        resize();
+
+        const STAR_COUNT = 220;
+        for (let i = 0; i < STAR_COUNT; i++) {
+            stars.push({
+                x: Math.random() * W,
+                y: Math.random() * H,
+                r: Math.random() * 1.6 + 0.3,
+                alpha: Math.random(),
+                speed: Math.random() * 0.008 + 0.002,
+                twinkle: Math.random() * Math.PI * 2,
+                drift: (Math.random() - 0.5) * 0.15
+            });
+        }
+
+        // 偶尔划过的流星
+        let meteors = [];
+        function spawnMeteor() {
+            if (Math.random() > 0.015) return;
+            meteors.push({
+                x: Math.random() * W,
+                y: Math.random() * H * 0.4,
+                len: Math.random() * 80 + 40,
+                speed: Math.random() * 8 + 6,
+                angle: Math.PI / 4 + (Math.random() - 0.5) * 0.3,
+                alpha: 1
+            });
+        }
+
+        function draw() {
+            ctx.clearRect(0, 0, W, H);
+
+            // 深空渐变底色
+            const grad = ctx.createRadialGradient(W/2, H/2, 0, W/2, H/2, Math.max(W,H)*0.7);
+            grad.addColorStop(0, '#1a0a3a');
+            grad.addColorStop(0.5, '#0d0620');
+            grad.addColorStop(1, '#050210');
+            ctx.fillStyle = grad;
+            ctx.fillRect(0, 0, W, H);
+
+            // 星星
+            for (const s of stars) {
+                s.twinkle += s.speed;
+                s.alpha = 0.3 + 0.7 * Math.abs(Math.sin(s.twinkle));
+                s.x += s.drift;
+                if (s.x < 0) s.x = W;
+                if (s.x > W) s.x = 0;
+
+                ctx.beginPath();
+                ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(255, 240, 220, ${s.alpha})`;
+                ctx.fill();
+
+                // 亮星光晕
+                if (s.r > 1.2) {
+                    ctx.beginPath();
+                    ctx.arc(s.x, s.y, s.r * 3, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(180, 140, 255, ${s.alpha * 0.15})`;
+                    ctx.fill();
+                }
+            }
+
+            // 流星
+            spawnMeteor();
+            meteors = meteors.filter(m => m.alpha > 0);
+            for (const m of meteors) {
+                const dx = Math.cos(m.angle) * m.len;
+                const dy = Math.sin(m.angle) * m.len;
+                const g = ctx.createLinearGradient(m.x, m.y, m.x - dx, m.y - dy);
+                g.addColorStop(0, `rgba(255,230,180,${m.alpha})`);
+                g.addColorStop(1, 'rgba(160,100,255,0)');
+                ctx.beginPath();
+                ctx.moveTo(m.x, m.y);
+                ctx.lineTo(m.x - dx, m.y - dy);
+                ctx.strokeStyle = g;
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                m.x += Math.cos(m.angle) * m.speed;
+                m.y += Math.sin(m.angle) * m.speed;
+                m.alpha -= 0.012;
+            }
+
+            animId = requestAnimationFrame(draw);
+        }
+        draw();
+    })();
+
+    /* ========== 流星拖尾光标 ========== */
+    (function initCursor() {
+        const dot = document.getElementById('cursor-dot');
+        const trails = [];
+        const TRAIL_COUNT = 14;
+        for (let i = 0; i < TRAIL_COUNT; i++) {
+            const el = document.createElement('div');
+            el.className = 'trail';
+            el.style.opacity = String(1 - i / TRAIL_COUNT);
+            el.style.width = el.style.height = `${6 - i * 0.3}px`;
+            document.body.appendChild(el);
+            trails.push({ el, x: 0, y: 0 });
+        }
+
+        let mouseX = -100, mouseY = -100;
+        document.addEventListener('mousemove', e => {
+            mouseX = e.clientX;
+            mouseY = e.clientY;
+            dot.style.left = mouseX + 'px';
+            dot.style.top = mouseY + 'px';
+        });
+
+        // 点击放大
+        document.addEventListener('mousedown', () => {
+            dot.style.width = '16px'; dot.style.height = '16px';
+        });
+        document.addEventListener('mouseup', () => {
+            dot.style.width = '8px'; dot.style.height = '8px';
+        });
+
+        function animateTrails() {
+            let px = mouseX, py = mouseY;
+            for (let i = 0; i < trails.length; i++) {
+                const t = trails[i];
+                t.x += (px - t.x) * (0.35 - i * 0.015);
+                t.y += (py - t.y) * (0.35 - i * 0.015);
+                t.el.style.left = t.x + 'px';
+                t.el.style.top = t.y + 'px';
+                px = t.x; py = t.y;
+            }
+            requestAnimationFrame(animateTrails);
+        }
+        animateTrails();
+    })();
+
+    /* ========== 3D 视差倾斜 ========== */
+    (function initParallax() {
+        const panel = document.getElementById('glass-panel');
+        const maxTilt = 4; // 度
+
+        document.addEventListener('mousemove', e => {
+            const cx = window.innerWidth / 2;
+            const cy = window.innerHeight / 2;
+            const dx = (e.clientX - cx) / cx;
+            const dy = (e.clientY - cy) / cy;
+            const rotY = dx * maxTilt;
+            const rotX = -dy * maxTilt;
+            const transX = dx * 8;
+            const transY = dy * 6;
+            panel.style.transform =
+                `rotateX(${rotX}deg) rotateY(${rotY}deg) translate(${transX}px, ${transY}px)`;
+        });
+
+        document.addEventListener('mouseleave', () => {
+            panel.style.transform = 'rotateX(0) rotateY(0) translate(0,0)';
+        });
+    })();
+</script>
+</body>
+</html>
