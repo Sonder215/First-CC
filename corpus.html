@@ -252,7 +252,7 @@
 
 <script>
     // ⚠️ 关键步骤：替换成你真实的 DeepSeek API 密钥
-    const API_KEY = "请在这里填入你的真实 DeepSeek 密钥";
+    const API_KEY = "请填入真实密钥！";
 
     /* ========== 状态 ========== */
     let currentTab = 'dict';
@@ -341,7 +341,7 @@ B: **英文**
                     'Authorization': `Bearer ${API_KEY}`
                 },
                 body: JSON.stringify({
-                    model: 'deepseek-chat',
+                    model: 'deepseek-v4-flash',
                     messages: [
                         { role: 'system', content: SYSTEM_PROMPTS[currentTab] },
                         { role: 'user', content: text }

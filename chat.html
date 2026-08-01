@@ -288,7 +288,7 @@
 
     <script>
         // ⚠️ 关键步骤：现在就把这里替换成你真实的 DeepSeek API 密钥
-        const API_KEY = "请在这里填入你的真实 DeepSeek 密钥"
+        const API_KEY = "请填入真实密钥！"
 
         function escapeHtml(str) {
             return str
@@ -354,7 +354,7 @@
                         "Authorization": `Bearer ${API_KEY}`
                     },
                     body: JSON.stringify({
-                        model: "deepseek-chat",
+                        model: "deepseek-v4-flash",
                         messages: [
     { role: "system", content: "你是一个专业的商务英语邮件撰写助手。用户会用中文给你提供邮件意图，你需要根据意图，自动生成三版语气不同（正式、热情、简洁）的英文商务邮件。返回时直接用英文写出这三封邮件，用分隔线把三封隔开，不需要加多余的废话。" },
     { role: "user", content: text }
