@@ -252,7 +252,7 @@
 
 <script>
     // ⚠️ 关键步骤：替换成你真实的 DeepSeek API 密钥
-    const API_KEY = "请填入真实密钥！";
+    const API_KEY = "";
 
     /* ========== 状态 ========== */
     let currentTab = 'dict';
@@ -324,48 +324,71 @@ B: **英文**
 
     /* ========== 调用 DeepSeek API ========== */
     async function generateCorpus() {
-        const input = document.getElementById('user-input');
-        const text = input.value.trim();
-        if (!text) { input.focus(); return; }
+    const input = document.getElementById('user-input');
+    const text = input.value.trim();
+    if (!text) { input.focus(); return; }
 
-        const btn = document.getElementById('generate-btn');
-        const box = document.getElementById('result-box');
-        btn.disabled = true;
-        box.innerHTML = '<div class="loading">✨ AI 正在生成语料，请稍候...</div>';
+    const btn = document.getElementById('generate-btn');
+    const box = document.getElementById('result-box');
 
-        try {
-            const resp = await fetch('https://api.deepseek.com/chat/completions', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': `Bearer ${API_KEY}`
-                },
-                body: JSON.stringify({
-                    model: 'deepseek-v4-flash',
-                    messages: [
-                        { role: 'system', content: SYSTEM_PROMPTS[currentTab] },
-                        { role: 'user', content: text }
-                    ],
-                    temperature: 0.7,
-                    max_tokens: 2000
-                })
-            });
-
-            if (!resp.ok) {
-                const err = await resp.json().catch(() => ({}));
-                throw new Error(err.error?.message || `HTTP ${resp.status}`);
-            }
-
-            const data = await resp.json();
-            const reply = data.choices?.[0]?.message?.content || '未获取到有效回复';
-            box.innerHTML = renderMarkdown(reply);
-        } catch (err) {
-            console.error(err);
-            box.innerHTML = `<div class="error-msg">⚠️ 请求失败：${escapeHtml(err.message)}<br>请检查 API 密钥或网络连接</div>`;
-        } finally {
-            btn.disabled = false;
-        }
+    // ——— 💥 终极拦截验证 ———
+    // 只要发现密钥是占位符，立刻停止，绝不执行后面的 fetch
+    if (API_KEY === "请填入真实密钥" || !API_KEY) {
+        // 加一个控制台打印，如果你能看到这行字，就说明拦截绝对生效了！
+        console.log("✅ 拦截成功！演示模式被触发。"); 
+        
+        const demoNotice = `
+            <div style="margin-top: 20px; padding: 15px; background: rgba(255, 200, 100, 0.1); border: 1px solid rgba(255, 200, 100, 0.3); border-radius: 8px; text-align: center; color: #f0e6d3;">
+                🛡️ 当前处于「演示模式」。<br>
+                因为 API 密钥已隐藏，所以无法在线上直接生成语料。<br>
+                <span style="font-size: 0.9rem; opacity: 0.8;">如需测试，请在本地 Cursor 填入真实密钥，或通过浏览器控制台注入密钥。</span>
+            </div>
+        `;
+        box.innerHTML = demoNotice;
+        return; // 这里的 return 会直接结束函数，后续代码绝对无法执行！
     }
+
+    // ——————————————————————————
+    // 下面的代码，只有填入真实的密钥才会执行
+    // ——————————————————————————
+
+    btn.disabled = true;
+    box.innerHTML = '<div class="loading">✨ AI 正在生成语料，请稍候...</div>';
+
+    try {
+        const resp = await fetch('https://api.deepseek.com/chat/completions', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${API_KEY}`
+            },
+            body: JSON.stringify({
+                model: 'deepseek-v4-flash',
+                messages: [
+                    { role: 'system', content: SYSTEM_PROMPTS[currentTab] },
+                    { role: 'user', content: text }
+                ],
+                temperature: 0.7,
+                max_tokens: 2000
+            })
+        });
+
+        if (!resp.ok) {
+            const err = await resp.json().catch(() => ({}));
+            throw new Error(err.error?.message || `HTTP ${resp.status}`);
+        }
+
+        const data = await resp.json();
+        const reply = data.choices?.[0]?.message?.content || '未获取到有效回复';
+        box.innerHTML = renderMarkdown(reply);
+
+    } catch (err) {
+        console.warn("请求出现异常：", err);
+        box.innerHTML = `<div style="color: #ffa07a;">⚠️ 请求出错了，请检查网络或密钥是否正确。</div>`;
+    } finally {
+        btn.disabled = false;
+    }
+}
 
     /* ========== 简易 Markdown → HTML（双语对照） ========== */
     function escapeHtml(str) {
