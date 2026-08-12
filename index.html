@@ -362,6 +362,8 @@
       visibility: visible !important;
     }
   </style>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
+
 </head>
 <body>
   <!-- 星空粒子画布（最底层） -->
@@ -398,14 +400,10 @@
       <!-- Hero Section -->
       <section class="hero">
         <div class="hero-content">
-          <p class="hero-greeting">Welcome · 幸会</p>
-          <h1 class="hero-name">刘凯</h1>
-          <p class="hero-identity">
-            天津科技大学 外国语学院
-            <span class="divider">·</span>
-            English Major, Class of 2025
-          </p>
-          <p class="hero-quote">Language is the road map of a culture. It tells you where its people come from and where they are going.</p>
+          <h1 class="hero-name">AI 智能外语工作台</h1>
+          <p class="hero-identity">专注大模型在英语学习与跨境商务中的智能应用</p>
+          <p class="hero-quote">🚀 目前已上线：AI 外贸邮件助手 ｜ AI 英语语料库</p>
+  
         </div>
         <div class="hero-scroll">
           <span></span>
@@ -413,35 +411,476 @@
         </div>
       </section>
 
-      <!-- Identity Badge -->
-      <section class="section-sm">
-        <div class="container">
-          <div class="identity-badge fade-up">
-            <div class="crest">TUST</div>
-            <div class="details">
-              <p class="university">天津科技大学 · Tianjin University of Science & Technology</p>
-              <p class="department">外国语学院 英语系 · School of Foreign Languages, English Department</p>
-              <p class="department">2025级本科生 · Undergraduate, Class of 2025</p>
-            </div>
-          </div>
-        </div>
-      </section>
+      
 
       <!-- Featured Thoughts -->
-      <section class="section">
+      <section class="section featured-thoughts-section">
+        <style>
+          /* —— Recent Thoughts：深色弥散光晕 + 极简杂志排版 —— */
+          .featured-thoughts-section {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            position: relative;
+            overflow: visible;
+            padding-top: clamp(3rem, 8vw, 5.5rem);
+            padding-bottom: clamp(3rem, 8vw, 5.5rem);
+          }
+
+          .featured-thoughts-section .container-wide {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+          }
+
+          .featured-thoughts-section .featured-title {
+            text-align: center;
+            margin-bottom: clamp(2.5rem, 6vw, 4rem);
+            background: none !important;
+            border: none !important;
+          }
+
+          .featured-thoughts-section .featured-title h2 {
+            font-family: 'Playfair Display', 'Times New Roman', serif;
+            font-size: clamp(1.85rem, 4.2vw, 2.75rem);
+            font-weight: 500;
+            letter-spacing: 0.28em;
+            line-height: 1.45;
+            color: rgba(245, 230, 211, 0.96);
+            text-shadow: 0 0 24px rgba(255, 215, 160, 0.22);
+            margin: 0 0 0.85rem;
+            text-transform: none;
+            border: none !important;
+          }
+
+          .featured-thoughts-section .featured-title .fleuron-sm {
+            color: rgba(245, 230, 211, 0.55);
+            font-size: 1.15rem;
+            letter-spacing: 0.4em;
+            margin: 0.6rem 0 1rem;
+            border: none !important;
+          }
+
+          .featured-thoughts-section .featured-title p {
+            font-family: var(--font-serif), 'Playfair Display', Georgia, serif !important;
+            font-style: italic;
+            font-size: clamp(0.95rem, 1.6vw, 1.12rem) !important;
+            line-height: 1.9 !important;
+            letter-spacing: 0.08em;
+            color: rgba(255, 255, 255, 0.72) !important;
+            max-width: 36em;
+            margin-left: auto;
+            margin-right: auto;
+            border: none !important;
+          }
+
+          /* 卡片网格：留白呼吸感 */
+          .featured-thoughts-section .posts-grid,
+          .featured-thoughts-section #featured-posts {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+            gap: clamp(1.75rem, 4vw, 2.75rem);
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            padding: 0.5rem 0 0;
+          }
+
+          /* 毛玻璃卡片本体（JS 生成的子项） */
+          .featured-thoughts-section #featured-posts > * {
+            position: relative !important;
+            isolation: isolate;
+            overflow: hidden !important;
+            background: rgba(255, 255, 255, 0.06) !important;
+            backdrop-filter: blur(18px) saturate(140%);
+            -webkit-backdrop-filter: blur(18px) saturate(140%);
+            border: 1px solid rgba(255, 255, 255, 0.12) !important;
+            border-top-color: rgba(255, 255, 255, 0.12) !important;
+            border-radius: 22px !important;
+            box-shadow:
+              0 8px 32px rgba(0, 0, 0, 0.28),
+              inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
+            padding: clamp(1.6rem, 3.2vw, 2.15rem) !important;
+            transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
+            color: rgba(255, 255, 255, 0.92) !important;
+          }
+
+          .featured-thoughts-section #featured-posts > *:hover {
+            transform: translateY(-6px);
+            border-color: rgba(255, 255, 255, 0.22) !important;
+            box-shadow:
+              0 18px 48px rgba(0, 0, 0, 0.38),
+              inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
+          }
+
+          /* 弥散光晕层（最底层） */
+          .featured-thoughts-section #featured-posts > *::before {
+            content: '';
+            position: absolute;
+            inset: -40% -20% auto;
+            height: 70%;
+            z-index: -1;
+            pointer-events: none;
+            border-radius: 50%;
+            filter: blur(42px);
+            opacity: 0.85;
+            transform: translateZ(0);
+          }
+
+          /* ① 粉紫 × 丁香紫 */
+          .featured-thoughts-section #featured-posts > *:nth-child(1)::before {
+            background:
+              radial-gradient(circle at 30% 40%, rgba(232, 160, 220, 0.72) 0%, transparent 55%),
+              radial-gradient(circle at 70% 60%, rgba(168, 130, 220, 0.65) 0%, transparent 60%);
+          }
+
+          /* ② 青蓝 × 冰蓝 */
+          .featured-thoughts-section #featured-posts > *:nth-child(2)::before {
+            background:
+              radial-gradient(circle at 35% 35%, rgba(120, 210, 230, 0.7) 0%, transparent 55%),
+              radial-gradient(circle at 75% 65%, rgba(140, 180, 255, 0.62) 0%, transparent 60%);
+          }
+
+          /* ③ 暖橙 × 肉粉 */
+          .featured-thoughts-section #featured-posts > *:nth-child(3)::before {
+            background:
+              radial-gradient(circle at 30% 40%, rgba(255, 180, 120, 0.7) 0%, transparent 55%),
+              radial-gradient(circle at 70% 60%, rgba(255, 170, 170, 0.58) 0%, transparent 60%);
+          }
+
+          /* 卡片内文字：亮白 / 香槟金 + 呼吸感 */
+          .featured-thoughts-section #featured-posts > *,
+          .featured-thoughts-section #featured-posts > * * {
+            border-color: transparent !important;
+          }
+
+          .featured-thoughts-section #featured-posts h2,
+          .featured-thoughts-section #featured-posts h3,
+          .featured-thoughts-section #featured-posts .post-title,
+          .featured-thoughts-section #featured-posts a {
+            color: rgba(245, 230, 211, 0.96) !important;
+            font-size: clamp(1.15rem, 2.1vw, 1.4rem) !important;
+            line-height: 1.65 !important;
+            letter-spacing: 0.04em;
+            text-decoration: none !important;
+            border: none !important;
+            background: none !important;
+            box-shadow: none !important;
+          }
+
+          .featured-thoughts-section #featured-posts p,
+          .featured-thoughts-section #featured-posts .post-excerpt,
+          .featured-thoughts-section #featured-posts .excerpt {
+            color: rgba(255, 255, 255, 0.78) !important;
+            font-size: clamp(0.95rem, 1.5vw, 1.05rem) !important;
+            line-height: 1.9 !important;
+            letter-spacing: 0.03em;
+            margin-top: 0.85rem;
+            border: none !important;
+          }
+
+          /* —— 1. 顶部提亮：主题 / 日期 → 香槟金亮白 + 柔和发光 —— */
+          .featured-thoughts-section #featured-posts time,
+          .featured-thoughts-section #featured-posts .post-date,
+          .featured-thoughts-section #featured-posts .post-category,
+          .featured-thoughts-section #featured-posts .category,
+          .featured-thoughts-section #featured-posts .tag,
+          .featured-thoughts-section #featured-posts .post-tag,
+          .featured-thoughts-section #featured-posts .topic,
+          .featured-thoughts-section #featured-posts .post-topic,
+          .featured-thoughts-section #featured-posts .post-label {
+            color: rgba(255, 248, 235, 0.98) !important;
+            font-size: 1.08rem !important;
+            font-weight: 500;
+            letter-spacing: 0.16em;
+            text-transform: uppercase;
+            text-shadow:
+              0 0 6px rgba(255, 255, 255, 0.55),
+              0 0 14px rgba(255, 215, 160, 0.55),
+              0 0 28px rgba(255, 230, 190, 0.28);
+            border: none !important;
+            background: none !important;
+          }
+
+          /* —— 2. 底部排版重构：阅读时长 / 中文结语 → 上下垂直排列 —— */
+          .featured-thoughts-section #featured-posts .post-meta,
+          .featured-thoughts-section #featured-posts .meta,
+          .featured-thoughts-section #featured-posts .post-footer {
+            display: flex !important;
+            flex-direction: column !important;
+            align-items: flex-start !important;
+            justify-content: flex-start !important;
+            flex-wrap: nowrap !important;
+            gap: 0.45rem !important;
+            margin-top: 1.35rem !important;
+            padding-top: 0.15rem;
+            border: none !important;
+            background: none !important;
+          }
+
+          /* 确保底部子项各自独占一行，并按「时长在上 / 中文在下」排序 */
+          .featured-thoughts-section #featured-posts .post-meta > *,
+          .featured-thoughts-section #featured-posts .meta > *,
+          .featured-thoughts-section #featured-posts .post-footer > * {
+            display: block !important;
+            width: auto !important;
+            max-width: 100%;
+          }
+
+          .featured-thoughts-section #featured-posts .reading-time,
+          .featured-thoughts-section #featured-posts .read-time,
+          .featured-thoughts-section #featured-posts .post-reading,
+          .featured-thoughts-section #featured-posts .minutes {
+            order: 1 !important;
+          }
+
+          .featured-thoughts-section #featured-posts .cn-title,
+          .featured-thoughts-section #featured-posts .post-cn,
+          .featured-thoughts-section #featured-posts .chinese-title,
+          .featured-thoughts-section #featured-posts .translation,
+          .featured-thoughts-section #featured-posts .post-subtitle {
+            order: 2 !important;
+          }
+
+          /* —— 3. 底部文字：亮白 × 粉紫渐变光感 + 呼吸感字距 —— */
+          .featured-thoughts-section #featured-posts .post-meta,
+          .featured-thoughts-section #featured-posts .meta,
+          .featured-thoughts-section #featured-posts .post-footer,
+          .featured-thoughts-section #featured-posts .reading-time,
+          .featured-thoughts-section #featured-posts .read-time,
+          .featured-thoughts-section #featured-posts .post-reading,
+          .featured-thoughts-section #featured-posts .minutes,
+          .featured-thoughts-section #featured-posts .cn-title,
+          .featured-thoughts-section #featured-posts .post-cn,
+          .featured-thoughts-section #featured-posts .chinese-title,
+          .featured-thoughts-section #featured-posts .translation,
+          .featured-thoughts-section #featured-posts .post-subtitle,
+          .featured-thoughts-section #featured-posts small {
+            font-size: 1.08rem !important;
+            letter-spacing: 0.12em !important;
+            line-height: 1.75 !important;
+            text-transform: none;
+            border: none !important;
+            box-shadow: none !important;
+          }
+
+          /* 阅读时长：通透亮白 + 微光 */
+          .featured-thoughts-section #featured-posts .reading-time,
+          .featured-thoughts-section #featured-posts .read-time,
+          .featured-thoughts-section #featured-posts .post-reading,
+          .featured-thoughts-section #featured-posts .minutes {
+            color: rgba(255, 252, 248, 0.92) !important;
+            background: none !important;
+            -webkit-text-fill-color: rgba(255, 252, 248, 0.92) !important;
+            text-shadow:
+              0 0 10px rgba(255, 255, 255, 0.35),
+              0 0 20px rgba(232, 180, 255, 0.22);
+          }
+
+          /* 中文结语：亮白 → 粉紫渐变光感 */
+          .featured-thoughts-section #featured-posts .cn-title,
+          .featured-thoughts-section #featured-posts .post-cn,
+          .featured-thoughts-section #featured-posts .chinese-title,
+          .featured-thoughts-section #featured-posts .translation,
+          .featured-thoughts-section #featured-posts .post-subtitle {
+            position: relative !important;
+            display: inline-block !important;
+            padding-left: 1.35em !important;
+            color: transparent !important;
+            background-image: linear-gradient(
+              115deg,
+              rgba(255, 255, 255, 0.98) 0%,
+              rgba(255, 230, 245, 0.96) 35%,
+              rgba(232, 175, 255, 0.95) 68%,
+              rgba(245, 220, 255, 0.98) 100%
+            ) !important;
+            -webkit-background-clip: text !important;
+            background-clip: text !important;
+            -webkit-text-fill-color: transparent !important;
+            filter: drop-shadow(0 0 8px rgba(232, 160, 220, 0.35));
+          }
+
+          /* 中文结语旁：纯 CSS 白色发光小星星 */
+          .featured-thoughts-section #featured-posts .cn-title::before,
+          .featured-thoughts-section #featured-posts .post-cn::before,
+          .featured-thoughts-section #featured-posts .chinese-title::before,
+          .featured-thoughts-section #featured-posts .translation::before,
+          .featured-thoughts-section #featured-posts .post-subtitle::before {
+            content: '✦' !important;
+            position: absolute !important;
+            left: 0 !important;
+            top: 50% !important;
+            transform: translateY(-52%) !important;
+            display: inline-block !important;
+            font-size: 0.78em !important;
+            line-height: 1 !important;
+            letter-spacing: 0 !important;
+            color: rgba(255, 255, 255, 0.95) !important;
+            background: none !important;
+            -webkit-text-fill-color: rgba(255, 255, 255, 0.95) !important;
+            background-image: none !important;
+            -webkit-background-clip: border-box !important;
+            background-clip: border-box !important;
+            filter: none !important;
+            text-shadow:
+              0 0 6px rgba(255, 255, 255, 0.95),
+              0 0 14px rgba(255, 220, 255, 0.75),
+              0 0 22px rgba(220, 170, 255, 0.45);
+            pointer-events: none;
+          }
+
+          /* 底部元数据容器内的子元素：统一放大字距，避免被旧规则压暗 */
+          .featured-thoughts-section #featured-posts .post-meta *,
+          .featured-thoughts-section #featured-posts .meta *,
+          .featured-thoughts-section #featured-posts .post-footer * {
+            font-size: 1.08rem !important;
+            letter-spacing: 0.12em !important;
+          }
+
+         /* 底部结语样式：亮粉色渐变 + 呼吸感 */
+.featured-thoughts-section #featured-posts .post-meta small,
+.featured-thoughts-section #featured-posts .post-footer small {
+    display: block !important;
+    position: relative !important;
+    padding-left: 0 !important;
+    margin-top: 8px !important;
+    color: transparent !important;
+    background-image: linear-gradient(115deg, rgba(255,255,255, 0.98) 0%, rgba(255, 230, 245, 0.96) 35%, rgba(232, 175, 255, 0.95) 68%) !important;
+    -webkit-background-clip: text !important;
+    background-clip: text !important;
+    font-size: 1.15rem !important;
+    font-weight: 500 !important;
+    letter-spacing: 0.1em !important;
+}
+
+/* 加发光小星星 */
+.featured-thoughts-section #featured-posts .post-meta small::before {
+    content: "✦ ";
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 1.2rem;
+    position: absolute;
+    left: -1.5em;
+    top: 0.1em;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
+}
+
+/* 干掉顶部彩条和多余方块 */
+.featured-thoughts-section #featured-posts .bar,
+.featured-thoughts-section #featured-posts .accent,
+.featured-thoughts-section #featured-posts .divider,
+.featured-thoughts-section #featured-posts .card-border,
+.featured-thoughts-section #featured-posts .card-bar,
+.featured-thoughts-section #featured-posts .card-tag {
+    display: none !important;
+}
+          /* 用 ::after 画一条极细（1px）半透明白色渐变顶线，替代彩条 */
+          .featured-thoughts-section #featured-posts > *::after {
+            content: '' !important;
+            display: block !important;
+            position: absolute !important;
+            top: 0 !important;
+            left: 12% !important;
+            right: 12% !important;
+            height: 1px !important;
+            max-height: 1px !important;
+            opacity: 1 !important;
+            visibility: visible !important;
+            background: linear-gradient(
+              90deg,
+              transparent 0%,
+              rgba(255, 255, 255, 0.38) 50%,
+              transparent 100%
+            ) !important;
+            border: none !important;
+            box-shadow: none !important;
+            border-radius: 0 !important;
+            z-index: 2;
+            pointer-events: none;
+            filter: none !important;
+            transform: none !important;
+          }
+
+          /* View All 按钮：极简香槟金 */
+          .featured-thoughts-section .view-all-wrap {
+            text-align: center;
+            margin-top: clamp(2.5rem, 5vw, 3.75rem);
+          }
+
+          .featured-thoughts-section .view-all-link {
+            display: inline-block;
+            text-decoration: none !important;
+            color: rgba(245, 230, 211, 0.92) !important;
+            font-family: 'Playfair Display', 'Times New Roman', serif;
+            font-size: clamp(0.95rem, 1.5vw, 1.08rem);
+            letter-spacing: 0.22em;
+            line-height: 1.8;
+            padding: 0.85rem 1.85rem;
+            border-radius: 999px;
+            border: 1px solid rgba(245, 230, 211, 0.28) !important;
+            background: rgba(255, 255, 255, 0.05);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            box-shadow: none !important;
+            transition: color 0.25s ease, border-color 0.25s ease, background 0.25s ease;
+          }
+
+          .featured-thoughts-section .view-all-link:hover {
+            color: #fff !important;
+            border-color: rgba(255, 255, 255, 0.45) !important;
+            background: rgba(255, 255, 255, 0.1);
+          }
+
+          @media (max-width: 640px) {
+            .featured-thoughts-section #featured-posts > *::before {
+              filter: blur(32px);
+              opacity: 0.75;
+            }
+
+            .featured-thoughts-section #featured-posts time,
+            .featured-thoughts-section #featured-posts .post-date,
+            .featured-thoughts-section #featured-posts .post-category,
+            .featured-thoughts-section #featured-posts .category,
+            .featured-thoughts-section #featured-posts .tag,
+            .featured-thoughts-section #featured-posts .post-tag,
+            .featured-thoughts-section #featured-posts .topic,
+            .featured-thoughts-section #featured-posts .post-topic,
+            .featured-thoughts-section #featured-posts .post-label {
+              font-size: 1rem !important;
+              letter-spacing: 0.12em;
+            }
+
+            .featured-thoughts-section #featured-posts .post-meta,
+            .featured-thoughts-section #featured-posts .meta,
+            .featured-thoughts-section #featured-posts .post-footer,
+            .featured-thoughts-section #featured-posts .reading-time,
+            .featured-thoughts-section #featured-posts .read-time,
+            .featured-thoughts-section #featured-posts .post-reading,
+            .featured-thoughts-section #featured-posts .minutes,
+            .featured-thoughts-section #featured-posts .cn-title,
+            .featured-thoughts-section #featured-posts .post-cn,
+            .featured-thoughts-section #featured-posts .chinese-title,
+            .featured-thoughts-section #featured-posts .translation,
+            .featured-thoughts-section #featured-posts .post-subtitle,
+            .featured-thoughts-section #featured-posts small {
+              font-size: 1rem !important;
+              letter-spacing: 0.1em !important;
+            }
+          }
+        </style>
+
         <div class="container-wide">
           <div class="featured-title">
             <h2>Recent Thoughts</h2>
             <p class="fleuron-sm">❦</p>
-            <p style="font-family: var(--font-serif); font-style: italic; color: rgba(255,255,255,0.65); margin-top: var(--space-sm);">
+            <p>
               Reflections on language, literature, and the spaces between
             </p>
           </div>
           <div class="posts-grid" id="featured-posts">
             <!-- Rendered by JS -->
           </div>
-          <div style="text-align: center; margin-top: var(--space-2xl);">
-            <a href="thoughts.html" class="filter-btn active" style="display: inline-block; text-decoration: none;">
+          <div class="view-all-wrap">
+            <a href="thoughts.html" class="view-all-link">
               View All Thoughts →
             </a>
           </div>
@@ -777,5 +1216,435 @@
       }
     })();
   </script>
+  <!-- ========== Part 1: Three.js CDN（也可移至 <head>） ========== -->
+
+  <!-- ========== Part 2: 3D 行星系统（背景之上、文字之下） ========== -->
+  <style>
+    #planet-system-canvas {
+      position: fixed !important;
+      top: 0 !important;
+      left: 0 !important;
+      right: 0 !important;
+      bottom: 0 !important;
+      width: 100vw !important;
+      height: 100vh !important;
+      margin: 0 !important;
+      padding: 0 !important;
+      border: none !important;
+      display: block !important;
+      pointer-events: none !important;
+      z-index: 1 !important;
+      background: transparent !important;
+      max-width: none !important;
+      max-height: none !important;
+      opacity: 1 !important;
+      visibility: visible !important;
+    }
+    .parallax-stage,
+    .top-quick-nav {
+      position: relative;
+      z-index: 10;
+    }
+  </style>
+  <script>
+    (function () {
+      if (typeof THREE === 'undefined') {
+        console.warn('[planet-system] Three.js failed to load.');
+        return;
+      }
+
+      /* —— 画布 —— */
+      const canvas = document.createElement('canvas');
+      canvas.id = 'planet-system-canvas';
+      canvas.setAttribute('aria-hidden', 'true');
+      document.body.insertBefore(canvas, document.body.firstChild);
+
+      const renderer = new THREE.WebGLRenderer({
+        canvas: canvas,
+        alpha: true,
+        antialias: true,
+        powerPreference: 'low-power'
+      });
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      renderer.setSize(window.innerWidth, window.innerHeight);
+      renderer.setClearColor(0x000000, 0);
+      if (renderer.outputColorSpace !== undefined) {
+        renderer.outputColorSpace = THREE.SRGBColorSpace;
+      }
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(
+        42,
+        window.innerWidth / window.innerHeight,
+        0.1,
+        200
+      );
+      camera.position.set(0, 14, 32);
+      camera.lookAt(0, 0, 0);
+
+      /* —— 灯光 —— */
+      scene.add(new THREE.AmbientLight(0xffffff, 2.5));
+      const sunLight = new THREE.PointLight(0xffe6b0, 3.0, 80, 2);
+      sunLight.position.set(0, 0, 0);
+      scene.add(sunLight);
+      const fill = new THREE.DirectionalLight(0x6688cc, 0.25);
+      fill.position.set(-10, 8, 12);
+      scene.add(fill);
+
+      /* —— 程序化地表纹理 —— */
+      function makePlanetTexture(cfg) {
+        const size = 512;
+        const c = document.createElement('canvas');
+        c.width = c.height = size;
+        const ctx = c.getContext('2d');
+        ctx.fillStyle = cfg.base;
+        ctx.fillRect(0, 0, size, size);
+
+        if (cfg.bands) {
+          for (let y = 0; y < size; y += 6) {
+            ctx.globalAlpha = 0.12 + Math.random() * 0.18;
+            ctx.fillStyle = cfg.band || '#ffffff';
+            ctx.fillRect(0, y + (Math.random() * 3), size, 2 + Math.random() * 5);
+          }
+        }
+
+        const spots = cfg.spots || 80;
+        for (let i = 0; i < spots; i++) {
+          const x = Math.random() * size;
+          const y = Math.random() * size;
+          const r = Math.random() * (cfg.maxR || 18) + 2;
+          ctx.globalAlpha = Math.random() * 0.45 + 0.08;
+          ctx.fillStyle = cfg.spot || '#000000';
+          ctx.beginPath();
+          ctx.arc(x, y, r, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        if (cfg.ocean) {
+          ctx.globalAlpha = 0.35;
+          ctx.fillStyle = cfg.ocean;
+          for (let i = 0; i < 30; i++) {
+            const x = Math.random() * size;
+            const y = Math.random() * size;
+            const r = Math.random() * 40 + 10;
+            ctx.beginPath();
+            ctx.ellipse(x, y, r, r * 0.6, Math.random() * Math.PI, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+
+        ctx.globalAlpha = 1;
+        const tex = new THREE.CanvasTexture(c);
+        if (tex.colorSpace !== undefined) tex.colorSpace = THREE.SRGBColorSpace;
+        tex.anisotropy = 4;
+        return tex;
+      }
+
+      function makeSunGlowTexture() {
+        const size = 256;
+        const c = document.createElement('canvas');
+        c.width = c.height = size;
+        const ctx = c.getContext('2d');
+        const g = ctx.createRadialGradient(size / 2, size / 2, 0, size / 2, size / 2, size / 2);
+        g.addColorStop(0, 'rgba(255, 230, 150, 1)');
+        g.addColorStop(0.25, 'rgba(255, 180, 60, 0.7)');
+        g.addColorStop(0.55, 'rgba(255, 120, 40, 0.25)');
+        g.addColorStop(1, 'rgba(255, 80, 0, 0)');
+        ctx.fillStyle = g;
+        ctx.fillRect(0, 0, size, size);
+        const tex = new THREE.CanvasTexture(c);
+        return tex;
+      }
+
+      /* —— 太阳 —— */
+      const system = new THREE.Group();
+      scene.add(system);
+
+      const sunGeo = new THREE.SphereGeometry(1.6, 48, 48);
+      const sunMat = new THREE.MeshBasicMaterial({ color: 0xffb84a });
+      const sun = new THREE.Mesh(sunGeo, sunMat);
+      system.add(sun);
+
+      const sunGlow = new THREE.Sprite(
+        new THREE.SpriteMaterial({
+          map: makeSunGlowTexture(),
+          blending: THREE.AdditiveBlending,
+          transparent: true,
+          depthWrite: false,
+          opacity: 0.9
+        })
+      );
+      sunGlow.scale.set(7.5, 7.5, 1);
+      system.add(sunGlow);
+
+      /* —— 发光轨道 —— */
+      function createOrbitLine(radius, color) {
+        const segments = 160;
+        const pts = [];
+        for (let i = 0; i <= segments; i++) {
+          const a = (i / segments) * Math.PI * 2;
+          pts.push(new THREE.Vector3(Math.cos(a) * radius, 0, Math.sin(a) * radius));
+        }
+        const geo = new THREE.BufferGeometry().setFromPoints(pts);
+        const mat = new THREE.LineBasicMaterial({
+          color: color,
+          transparent: true,
+          opacity: 0.4,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false
+        });
+        const line = new THREE.Line(geo, mat);
+        system.add(line);
+
+        /* 外层柔光轨 */
+        const matSoft = new THREE.LineBasicMaterial({
+          color: color,
+          transparent: true,
+          opacity: 0.12,
+          blending: THREE.AdditiveBlending,
+          depthWrite: false
+        });
+        const soft = new THREE.Line(geo.clone(), matSoft);
+        soft.scale.set(1.01, 1, 1.01);
+        system.add(soft);
+        return line;
+      }
+
+      /* —— 行星配置（5 颗，含土星） —— */
+      const planetDefs = [
+        {
+          name: 'rocky',
+          size: 0.35,
+          orbit: 4.2,
+          speed: 0.018,
+          rot: 0.025,
+          tilt: 0.1,
+          texture: { base: '#8a7a6a', spot: '#5a4a3a', spots: 120, maxR: 12 }
+        },
+        {
+          name: 'terra',
+          size: 0.55,
+          orbit: 7.0,
+          speed: 0.011,
+          rot: 0.02,
+          tilt: 0.35,
+          texture: {
+            base: '#2a6a9a',
+            spot: '#3d8a4a',
+            ocean: '#1a4a7a',
+            spots: 90,
+            maxR: 22
+          }
+        },
+        {
+          name: 'mars',
+          size: 0.42,
+          orbit: 9.8,
+          speed: 0.008,
+          rot: 0.018,
+          tilt: 0.2,
+          texture: { base: '#c45a32', spot: '#8a3020', spots: 100, maxR: 16 }
+        },
+        {
+          name: 'saturn',
+          size: 0.95,
+          orbit: 14.5,
+          speed: 0.0045,
+          rot: 0.028,
+          tilt: 0.45,
+          hasRing: true,
+          texture: {
+            base: '#d4b878',
+            spot: '#b89850',
+            band: '#f0e0b0',
+            bands: true,
+            spots: 60,
+            maxR: 20
+          }
+        },
+        {
+          name: 'ice',
+          size: 0.7,
+          orbit: 19.2,
+          speed: 0.003,
+          rot: 0.022,
+          tilt: 0.55,
+          texture: {
+            base: '#3a6aaa',
+            spot: '#7ab0e0',
+            band: '#a0d0ff',
+            bands: true,
+            spots: 50,
+            maxR: 18
+          }
+        }
+      ];
+
+      const orbitColors = [0x6a8cff, 0x5ad0c8, 0xff8866, 0xffd078, 0x78a0ff];
+      const planets = [];
+
+      planetDefs.forEach(function (def, idx) {
+        createOrbitLine(def.orbit, orbitColors[idx]);
+
+        const geo = new THREE.SphereGeometry(def.size, 48, 48);
+        const mat = new THREE.MeshStandardMaterial({
+          map: makePlanetTexture(def.texture),
+          roughness: 0.72,
+          metalness: 0.08,
+          emissive: new THREE.Color(def.texture.base).multiplyScalar(0.06)
+        });
+        const mesh = new THREE.Mesh(geo, mat);
+        mesh.rotation.z = def.tilt;
+
+        /* 土星半透明发光星环 */
+        if (def.hasRing) {
+          const ringGeo = new THREE.RingGeometry(def.size * 1.35, def.size * 2.35, 96);
+          /* 星环纹理：径向明暗带 */
+          const rc = document.createElement('canvas');
+          rc.width = 512;
+          rc.height = 64;
+          const rctx = rc.getContext('2d');
+          const rg = rctx.createLinearGradient(0, 0, 512, 0);
+          rg.addColorStop(0, 'rgba(210,180,120,0)');
+          rg.addColorStop(0.12, 'rgba(220,190,130,0.55)');
+          rg.addColorStop(0.35, 'rgba(180,150,90,0.25)');
+          rg.addColorStop(0.5, 'rgba(240,210,150,0.75)');
+          rg.addColorStop(0.68, 'rgba(160,130,80,0.3)');
+          rg.addColorStop(0.85, 'rgba(230,200,140,0.6)');
+          rg.addColorStop(1, 'rgba(210,180,120,0)');
+          rctx.fillStyle = rg;
+          rctx.fillRect(0, 0, 512, 64);
+          const ringTex = new THREE.CanvasTexture(rc);
+          if (ringTex.colorSpace !== undefined) ringTex.colorSpace = THREE.SRGBColorSpace;
+
+          const ringMat = new THREE.MeshBasicMaterial({
+            map: ringTex,
+            side: THREE.DoubleSide,
+            transparent: true,
+            opacity: 0.85,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+          });
+          const ring = new THREE.Mesh(ringGeo, ringMat);
+          ring.rotation.x = Math.PI / 2;
+          mesh.add(ring);
+
+          /* 第二层更淡的外环光晕 */
+          const ringGlowGeo = new THREE.RingGeometry(def.size * 1.3, def.size * 2.5, 96);
+          const ringGlowMat = new THREE.MeshBasicMaterial({
+            color: 0xffe0a0,
+            side: THREE.DoubleSide,
+            transparent: true,
+            opacity: 0.18,
+            blending: THREE.AdditiveBlending,
+            depthWrite: false
+          });
+          const ringGlow = new THREE.Mesh(ringGlowGeo, ringGlowMat);
+          ringGlow.rotation.x = Math.PI / 2;
+          mesh.add(ringGlow);
+        }
+
+        mesh.userData = {
+          orbit: def.orbit,
+          speed: def.speed,
+          rot: def.rot,
+          angle: Math.random() * Math.PI * 2,
+          yBob: Math.random() * Math.PI * 2
+        };
+        /* 初始位置 */
+        mesh.position.set(
+          Math.cos(mesh.userData.angle) * def.orbit,
+          0,
+          Math.sin(mesh.userData.angle) * def.orbit
+        );
+        system.add(mesh);
+        planets.push(mesh);
+      });
+
+      /* —— 轻微整体倾角，更有立体感 —— */
+      system.rotation.x = 0.28;
+      system.rotation.z = -0.08;
+
+      /* —— 动画 —— */
+      let systemSpin = 0;
+      /* — 交互工具 — */
+const raycaster = new THREE.Raycaster();
+const mouse = new THREE.Vector2();
+let hoveredPlanet = null;
+
+window.addEventListener('mousemove', (event) => {
+    mouse.x = (event.clientX / window.innerWidth) * 2 - 1;
+    mouse.y = -(event.clientY / window.innerHeight) * 2 + 1;
+});
+      function animate() {
+        requestAnimationFrame(animate);
+
+        sun.rotation.y += 0.004;
+        sunGlow.material.rotation += 0.001;
+
+        planets.forEach(function (p) {
+          const u = p.userData;
+          u.angle += u.speed;
+          u.yBob += u.speed * 0.6;
+          p.position.x = Math.cos(u.angle) * u.orbit;
+          p.position.z = Math.sin(u.angle) * u.orbit;
+          p.position.y = Math.sin(u.yBob) * 0.15;
+          p.rotation.y += u.rot;
+        });
+
+        systemSpin += 0.00035;
+        system.rotation.y = systemSpin;
+/* — 鼠标检测与交互 — */
+raycaster.setFromCamera(mouse, camera);
+const intersects = raycaster.intersectObjects(planets);
+
+if (intersects.length > 0) {
+    const hovered = intersects[0].object;
+    if (hovered !== hoveredPlanet) {
+        if (hoveredPlanet) hoveredPlanet.scale.set(1, 1, 1);
+        hovered.scale.set(1.3, 1.3, 1.3);
+        hoveredPlanet = hovered;
+    }
+} else {
+    if (hoveredPlanet) {
+        hoveredPlanet.scale.set(1, 1, 1);
+        hoveredPlanet = null;
+    }
+}
+        renderer.render(scene, camera);
+      }
+      requestAnimationFrame(animate);
+
+      /* —— 自适应 —— */
+      window.addEventListener('resize', function () {
+        const w = window.innerWidth;
+        const h = window.innerHeight;
+        camera.aspect = w / h;
+        camera.updateProjectionMatrix();
+        renderer.setSize(w, h);
+      }, { passive: true });
+    })();
+  </script>
+<style>
+  .fixed-footer {
+      position: fixed;
+      bottom: 30px;
+      width: 100%;
+      text-align: center;
+      /* 颜色换成更亮的香槟金 */
+      color: rgba(245, 230, 211, 0.95);
+      /* 加上柔和的发光效果，跟星空的契合度更高 */
+      text-shadow: 0 0 15px rgba(255, 215, 0, 0.3), 0 0 30px rgba(255, 215, 0, 0.1);
+      /* 使用跟主页一致的优雅衬线字体 */
+      font-family: 'Playfair Display', 'Times New Roman', serif;
+      font-size: 18px;        /* 适当放大字号 */
+      letter-spacing: 3px;    /* 加宽字间距，更透气 */
+      z-index: 10;
+      pointer-events: none;   /* 不干扰鼠标交互 */
+  }
+</style>
+<footer class="fixed-footer">
+  刘凯 · 天津科技大学 外国语学院 · 2025级本科生
+</footer>
 </body>
 </html>
