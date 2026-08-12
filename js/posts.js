@@ -199,16 +199,18 @@ function renderPostCard(post) {
 
   return `
     <article class="post-card fade-up" style="--card-color: ${post.coverColor};">
-      <div class="card-accent"></div>
-      <div class="card-body">
-        <div class="card-category">${post.categoryZh} · ${post.category.toUpperCase()}</div>
-        <div class="card-date">${dateFormatted}</div>
-        <h3><a href="post.html?id=${post.id}">${post.title}</a></h3>
-        <p class="card-excerpt">${post.excerpt}</p>
-        <div class="card-meta">
-          <span class="reading-time">${post.readingTime}</span>
-          <span>${post.titleZh}</span>
-        </div>
+      <div class="card-accent" style="display: none;"></div>
+      <div class="card-body" style="display: flex; flex-direction: column; align-items: flex-start; gap: 5px; padding: 20px 24px;">
+    <div class="card-category" style="color: transparent; background-image: linear-gradient(135deg, #ffffff 0%, #fbc2eb 50%, #a18cd1 100%); -webkit-background-clip: text; background-clip: text; font-size: 1.2rem; font-weight: 600; letter-spacing: 2px; text-shadow: 0 0 20px rgba(255, 255, 255, 0.4);">${post.categoryZh} · ${post.category.toUpperCase()}</div>
+    <div class="card-date" style="color: rgba(255, 255, 255, 0.7); font-size: 0.9rem; letter-spacing: 1px; margin-bottom: 6px;">${dateFormatted}</div>
+    <h3 style="margin: 4px 0;">${post.title}</h3>
+    <p class="card-excerpt" style="color: rgba(255, 255, 255, 0.75); line-height: 1.6; margin-top: 6px;">${post.excerpt}</p >
+    <div class="card-meta" style="display: flex; flex-direction: column; align-items: flex-start; gap: 4px; margin-top: 10px;">
+    <div style="color: rgba(255,255,255,0.85); font-size: 1rem; letter-spacing: 1px;">${post.readingTime}</div>
+    <div style="color: transparent; background-image: linear-gradient(135deg, #4facfe 0%, #00f2fe 50%, #fa709a 100%); -webkit-background-clip: text; background-clip: text; font-size: 1.1rem; letter-spacing: 0.1em;">
+        ✦ ${post.titleZh}
+    </div>
+</div>
       </div>
     </article>
   `;
@@ -234,10 +236,11 @@ function renderFullPost(post) {
         <div class="post-category">${post.categoryZh} · ${post.category.toUpperCase()}</div>
         <h1>${post.title}</h1>
         <p class="post-date">${dateFormatted}</p>
-        <div class="post-meta-row">
-          <span>${post.readingTime}</span>
-          <span>·</span>
-          <span>${post.titleZh}</span>
+       <div class="card-meta" style="display: flex; flex-direction: column; gap: 6px; margin-top: 8px;">
+    <div style="color: rgba(255,255,255,0.85); font-size: 1rem; letter-spacing: 1px;">${post.readingTime}</div>
+    <div style="color: transparent; background-image: linear-gradient(115deg, #ffffff, #f0d0f8); -webkit-background-clip: text; background-clip: text; font-size: 1.1rem; letter-spacing: 0.1em;">
+        ✦ ${post.titleZh}
+    </div>
         </div>
       </header>
 
