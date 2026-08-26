@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="AI 营销助手 —— 国内种草文案（小红书/抖音）与海外营销文案（Instagram/LinkedIn）一键生成，由 DeepSeek 驱动。">
+  <title>AI 营销助手 · Marketing</title>
+  <style>
+    /* =========================================================
+       深蓝星空主题 —— 与主页视觉保持一致
+       星空粒子画布 + 毛玻璃卡片 + 香槟金渐变文字 + 弥散紫蓝背景
+       ========================================================= */
+    html, body {
+      margin: 0;
+      padding: 0;
+      min-height: 100%;
+      background: #050816;
+      color: rgba(255, 255, 255, 0.92);
+      overflow-x: hidden;
+      font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+    }
+
+    body {
+      background:
+        radial-gradient(ellipse at 20% 10%, rgba(88, 60, 180, 0.35) 0%, transparent 45%),
+        radial-gradient(ellipse at 80% 90%, rgba(30, 60, 160, 0.4) 0%, transparent 50%),
+        linear-gradient(160deg, #060a1f 0%, #0b1238 40%, #12082a 100%);
+    }
+
+    /* —— 星空画布：最底层 —— */
+    #starfield-canvas {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      pointer-events: none;
+      z-index: 0;
+      display: block;
+    }
+
+    /* —— 顶部快捷导航：半透明融入星空 —— */
+    .top-quick-nav {
+      position: relative;
+      z-index: 10;
+      background: rgba(8, 14, 40, 0.55);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 20px;
+      row-gap: 10px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .top-quick-nav a {
+      text-decoration: none;
+      color: rgba(255, 255, 255, 0.85);
+      font-size: 0.95rem;
+      letter-spacing: 0.04em;
+      transition: color 0.2s ease;
+    }
+
+    .top-quick-nav a:hover {
+      color: #fff;
+    }
+
+    .top-quick-nav a.current {
+      color: #fff;
+      text-shadow: 0 0 12px rgba(245, 230, 200, 0.55);
+    }
+
+    /* —— 主体 —— */
+    main.container {
+      position: relative;
+      z-index: 2;
+      max-width: 920px;
+      margin: 0 auto;
+      padding: clamp(2.5rem, 6vw, 4.5rem) 20px 3rem;
+    }
+
+    /* —— 页头：香槟金 → 银白冰蓝 渐变 —— */
+    .page-header {
+      text-align: center;
+      margin-bottom: clamp(2.2rem, 5vw, 3.2rem);
+    }
+
+    .page-title {
+      margin: 0 0 0.9rem;
+      font-family: 'Playfair Display', 'Times New Roman', serif;
+      font-weight: 600;
+      font-size: clamp(2rem, 5.5vw, 3.2rem);
+      letter-spacing: 0.18em;
+      line-height: 1.4;
+      background: linear-gradient(
+        135deg,
+        #f5e6c8 0%,
+        #ffe9b0 22%,
+        #fffef5 48%,
+        #eef3fb 72%,
+        #d0e0f8 100%
+      );
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+      filter: drop-shadow(0 0 14px rgba(245, 230, 200, 0.45))
+              drop-shadow(0 0 36px rgba(255, 233, 176, 0.2));
+    }
+
+    .page-subtitle {
+      margin: 0;
+      color: rgba(255, 255, 255, 0.66);
+      font-size: clamp(0.88rem, 1.6vw, 1.02rem);
+      letter-spacing: 0.14em;
+      line-height: 1.9;
+    }
+
+    .fleuron {
+      color: rgba(245, 230, 211, 0.55);
+      font-size: 1.1rem;
+      letter-spacing: 0.4em;
+      margin: 0.7rem 0 0;
+    }
+
+    /* —— Tab 切换 —— */
+    .tabs {
+      display: flex;
+      justify-content: center;
+      gap: 14px;
+      margin-bottom: clamp(1.8rem, 4vw, 2.6rem);
+      flex-wrap: wrap;
+    }
+
+    .tab-btn {
+      appearance: none;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      color: rgba(255, 255, 255, 0.62);
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 600;
+      letter-spacing: 0.1em;
+      padding: 12px 30px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: color 0.28s ease, background 0.28s ease, border-color 0.28s ease, box-shadow 0.28s ease;
+    }
+
+    .tab-btn:hover:not(.active) {
+      color: rgba(255, 255, 255, 0.85);
+    }
+
+    .tab-btn.active {
+      color: rgba(255, 248, 235, 0.98);
+      background: linear-gradient(135deg, rgba(245, 230, 200, 0.22), rgba(180, 200, 255, 0.16));
+      border-color: rgba(255, 255, 255, 0.38);
+      box-shadow:
+        0 0 18px rgba(245, 230, 200, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.15);
+    }
+
+    /* —— 面板毛玻璃卡片 —— */
+    .panel {
+      background: rgba(255, 255, 255, 0.055);
+      backdrop-filter: blur(18px) saturate(140%);
+      -webkit-backdrop-filter: blur(18px) saturate(140%);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 24px;
+      box-shadow:
+        0 10px 36px rgba(0, 0, 0, 0.32),
+        inset 0 1px 0 rgba(255, 255, 255, 0.08);
+      padding: clamp(1.5rem, 3.4vw, 2.4rem);
+    }
+
+    .panel-head {
+      margin: 0 0 1.4rem;
+      font-size: 1.05rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      color: rgba(245, 230, 211, 0.94);
+      text-shadow: 0 0 16px rgba(255, 215, 160, 0.25);
+    }
+
+    .form-group {
+      margin-bottom: 1.4rem;
+    }
+
+    .form-group label {
+      display: block;
+      margin-bottom: 0.55rem;
+      font-size: 0.9rem;
+      letter-spacing: 0.1em;
+      color: rgba(255, 255, 255, 0.78);
+    }
+
+    select, textarea {
+      width: 100%;
+      box-sizing: border-box;
+      background: rgba(255, 255, 255, 0.06);
+      border: 1px solid rgba(255, 255, 255, 0.16);
+      border-radius: 14px;
+      color: rgba(255, 255, 255, 0.92);
+      font-family: inherit;
+      font-size: 0.95rem;
+      padding: 12px 16px;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      transition: border-color 0.25s ease, box-shadow 0.25s ease;
+    }
+
+    select {
+      cursor: pointer;
+      appearance: auto;
+    }
+
+    select option {
+      background: #0b1238;
+      color: #fff;
+    }
+
+    textarea {
+      min-height: 130px;
+      resize: vertical;
+      line-height: 1.75;
+    }
+
+    select:focus, textarea:focus {
+      outline: none;
+      border-color: rgba(140, 190, 255, 0.6);
+      box-shadow:
+        0 0 0 3px rgba(120, 170, 255, 0.15),
+        0 0 18px rgba(120, 170, 255, 0.18);
+    }
+
+    textarea::placeholder {
+      color: rgba(255, 255, 255, 0.38);
+    }
+
+    /* —— 示例快捷填充 —— */
+    .examples {
+      margin-top: 0.6rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .example-chip {
+      appearance: none;
+      border: 1px dashed rgba(140, 190, 255, 0.35);
+      background: rgba(120, 170, 255, 0.06);
+      color: rgba(190, 215, 255, 0.85);
+      font-family: inherit;
+      font-size: 0.8rem;
+      letter-spacing: 0.04em;
+      padding: 6px 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+    }
+
+    .example-chip:hover {
+      background: rgba(120, 170, 255, 0.16);
+      border-color: rgba(140, 190, 255, 0.6);
+      color: #fff;
+    }
+
+    /* —— 生成按钮 —— */
+    .btn-generate {
+      appearance: none;
+      border: none;
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 50%, #f093fb 100%);
+      color: #fff;
+      font-family: inherit;
+      font-size: 1rem;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      padding: 13px 36px;
+      border-radius: 999px;
+      cursor: pointer;
+      box-shadow: 0 6px 24px rgba(79, 172, 254, 0.35);
+      transition: transform 0.25s ease, box-shadow 0.25s ease, opacity 0.25s ease;
+    }
+
+    .btn-generate:hover:not(:disabled) {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 32px rgba(240, 147, 251, 0.42);
+    }
+
+    .btn-generate:active:not(:disabled) {
+      transform: translateY(0);
+    }
+
+    .btn-generate:disabled {
+      opacity: 0.55;
+      cursor: not-allowed;
+    }
+
+    /* —— 输出区 —— */
+    .output {
+      margin-top: 1.8rem;
+    }
+
+    .output-toolbar {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 0.9rem;
+    }
+
+    .copy-btn {
+      appearance: none;
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      background: rgba(255, 255, 255, 0.07);
+      color: rgba(255, 255, 255, 0.8);
+      font-family: inherit;
+      font-size: 0.82rem;
+      letter-spacing: 0.06em;
+      padding: 7px 16px;
+      border-radius: 999px;
+      cursor: pointer;
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      transition: background 0.25s ease, color 0.25s ease, border-color 0.25s ease;
+    }
+
+    .copy-btn:hover {
+      background: rgba(255, 255, 255, 0.14);
+      color: #fff;
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    .result-section {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-top-color: rgba(255, 255, 255, 0.18);
+      border-radius: 18px;
+      padding: 18px 22px;
+      margin-bottom: 14px;
+      box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.06);
+      animation: rise-in 0.5s ease both;
+    }
+
+    @keyframes rise-in {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .result-section h4 {
+      margin: 0 0 10px;
+      font-size: 0.92rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      background: linear-gradient(
+        115deg,
+        #f5e6c8 0%,
+        #f7f4ec 45%,
+        #dce8f6 100%
+      );
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+      filter: drop-shadow(0 0 8px rgba(245, 230, 200, 0.3));
+    }
+
+    .result-body {
+      color: rgba(255, 255, 255, 0.88);
+      font-size: 0.95rem;
+      line-height: 1.9;
+      letter-spacing: 0.02em;
+      white-space: pre-wrap;
+      word-break: break-word;
+    }
+
+    .result-body:empty { display: none; }
+
+    /* —— 标签 chips —— */
+    .chip-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .chip {
+      display: inline-block;
+      padding: 5px 14px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, rgba(79, 172, 254, 0.18), rgba(240, 147, 251, 0.18));
+      border: 1px solid rgba(140, 190, 255, 0.3);
+      color: #bfe0ff;
+      font-size: 0.86rem;
+      letter-spacing: 0.03em;
+    }
+
+    /* —— 海外 CTA 按钮预览 —— */
+    .cta-preview {
+      display: inline-block;
+      margin-top: 12px;
+      padding: 11px 28px;
+      border-radius: 999px;
+      background: linear-gradient(135deg, #f5a623 0%, #ff7eb3 100%);
+      color: #fff;
+      font-weight: 700;
+      font-size: 0.95rem;
+      letter-spacing: 0.06em;
+      box-shadow: 0 6px 22px rgba(255, 126, 179, 0.35);
+    }
+
+    /* —— 错误提示 —— */
+    .result-error {
+      background: rgba(255, 90, 90, 0.08);
+      border: 1px solid rgba(255, 130, 130, 0.35);
+      border-radius: 18px;
+      padding: 18px 22px;
+      color: rgba(255, 200, 200, 0.95);
+      font-size: 0.92rem;
+      line-height: 1.8;
+      letter-spacing: 0.03em;
+      animation: rise-in 0.5s ease both;
+    }
+
+    /* —— API 提示 —— */
+    .api-hint {
+      margin-top: 1.4rem;
+      font-size: 0.78rem;
+      letter-spacing: 0.05em;
+      color: rgba(255, 255, 255, 0.4);
+      text-align: center;
+      line-height: 1.8;
+    }
+
+    .api-hint code {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.14);
+      border-radius: 6px;
+      padding: 2px 8px;
+      font-family: Consolas, 'Courier New', monospace;
+      font-size: 0.76rem;
+      color: rgba(200, 220, 255, 0.85);
+    }
+
+    /* —— 页脚 —— */
+    .site-footer {
+      position: relative;
+      z-index: 2;
+      text-align: center;
+      padding: 2.2rem 20px 3rem;
+      background: rgba(6, 10, 30, 0.45);
+      border-top: 1px solid rgba(255, 255, 255, 0.1);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+    }
+
+    .site-footer p {
+      margin: 0.4rem 0;
+      color: rgba(255, 255, 255, 0.72);
+      font-size: 0.9rem;
+      letter-spacing: 0.1em;
+      line-height: 1.9;
+    }
+
+    .footer-quote {
+      font-family: 'Playfair Display', Georgia, serif;
+      font-style: italic;
+      letter-spacing: 0.14em !important;
+    }
+
+    @media (max-width: 640px) {
+      .tab-btn { padding: 10px 22px; font-size: 0.92rem; }
+      .panel { padding: 1.3rem 1.1rem; }
+    }
+    /* 移动端适配：小屏幕下变为上下排列 */
+@media (max-width: 768px) {
+    .panel { flex-direction: column !important; gap: 20px !important; }
+    .form-group { width: 100% !important; }
+    .output { margin-top: 20px !important; }
+}
+  </style>
+</head>
+<body>
+  <!-- 星空粒子画布（最底层） -->
+  <canvas id="starfield-canvas" aria-hidden="true"></canvas>
+
+  <!-- 顶部导航条：与主页保持一致 -->
+  <div class="top-quick-nav">
+    <a href="index.html">🏠 个人主页</a>
+    <a href="chat.html">📧 AI 外贸邮件助手</a>
+    <a href="corpus.html">📖 AI 英语语料库</a>
+    <a href="marketing.html" class="current">📈 AI 营销助手</a>
+  </div>
+
+  <main class="container">
+    <!-- 页头 -->
+    <header class="page-header">
+      <h1 class="page-title">AI 营销助手</h1>
+      <p class="fleuron">❦</p>
+      <p class="page-subtitle">国内种草 · 海外出海 —— 输入卖点，一键生成高转化营销文案</p>
+    </header>
+
+    <!-- Tab 切换 -->
+    <div class="tabs" role="tablist">
+      <button class="tab-btn active" data-tab="domestic" role="tab" aria-selected="true">🇨🇳 国内营销</button>
+      <button class="tab-btn" data-tab="overseas" role="tab" aria-selected="false">🌍 海外营销</button>
+    </div>
+
+    <!-- ============ 面板一：国内营销 ============ -->
+    <section class="panel" id="panel-domestic">
+      <h2 class="panel-head">🇨🇳 国内种草文案 · 小红书 / 抖音</h2>
+
+      <div class="form-group">
+        <label for="domestic-platform">🎯 选择平台</label>
+        <select id="domestic-platform">
+          <option value="小红书">📕 小红书</option>
+          <option value="抖音">🎵 抖音</option>
+          <option value="京东">🛒 京东</option>
+          <option value="淘宝">🛍️ 淘宝/天猫</option>
+ 
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="domestic-input">✏️ 产品卖点</label>
+        <textarea id="domestic-input" class="form-control" placeholder="产品名称：[XX]  目标人群：[XX]  核心卖点：[XX]  价格/活动：[XX]"></textarea>
+  
+        <div class="examples">
+          <button class="example-chip" type="button" data-target="domestic-input">📕 填示例：敏感肌氨基酸洁面乳</button>
+          <button class="example-chip" type="button" data-target="domestic-input">🎵 填示例：百元降噪蓝牙耳机</button>
+        </div>
+      </div>
+
+      <button class="btn-generate" id="btn-domestic">✨ 生成种草文案</button>
+
+      <div class="output" id="domestic-output"></div>
+    </section>
+
+    <!-- ============ 面板二：海外营销 ============ -->
+    <section class="panel" id="panel-overseas" style="display: none;">
+      <h2 class="panel-head">🌍 海外营销文案 · Instagram / LinkedIn</h2>
+
+      <div class="form-group">
+        <label for="overseas-platform">🎯 Choose Platform / 选择平台</label>
+        <select id="overseas-platform">
+          <option value="instagram">📸 Instagram</option>
+          <option value="linkedin">💼 LinkedIn</option>
+          <option value="facebook">📘 Facebook</option>
+          <option value="tiktok">🎬 TikTok</option>
+          <option value="youtube">▶️ YouTube</option>
+          <option value="amazon">🛒 Amazon</option>
+          <option value="temu">🛒 Temu</option>
+        </select>
+      </div>
+
+      <div class="form-group">
+        <label for="overseas-input">✏️ 中文卖点（自动生成地道英文文案）</label>
+        <textarea id="overseas-input" class="form-control" placeholder="请输入中文卖点，格式示例：产品名称：[XX]  目标人群：[XX]  核心卖点：[XX]  价格/活动：[XX]"></textarea>
+  
+        <div class="examples">
+          <button class="example-chip" type="button" data-target="overseas-input">📸 填示例：便携式陶瓷手冲壶</button>
+          <button class="example-chip" type="button" data-target="overseas-input">💼 填示例：外贸企业智能 CRM 系统</button>
+        </div>
+      </div>
+      <div class="form-group">
+        <label for="product-link-input">🔗 产品购买链接（选填，用于生成按钮跳转）</label>
+        <input type="text" id="product-link-input" class="form-control" placeholder="例如：https://www.amazon.com/dp/xxxx">
+    </div>
+
+      <button class="btn-generate" id="btn-overseas">🚀 生成英文营销文案</button>
+
+      <div class="output" id="overseas-output"></div>
+    </section>
+
+    <!-- API 提示 -->
+    <p class="api-hint">
+      💡 本页由 DeepSeek API 驱动 · 使用前请在代码中填写密钥：<code>const API_KEY = ""</code>
+    </p>
+  </main>
+
+  <!-- 页脚 -->
+  <footer class="site-footer">
+    <p class="footer-quote">「好文案，让世界看见你的产品。」</p>
+    <p class="footer-info">天津科技大学 · 外国语学院 英语系 · 2025–2029</p>
+  </footer>
+
+  <script>
+    /* =========================================================
+       DeepSeek API 配置
+       ⚠️ 按需求写死为空字符串：使用时请在此填入你的 API Key
+       ========================================================= */
+    const API_KEY = "";
+    const API_URL = "https://api.deepseek.com/chat/completions";
+    const MODEL = "deepseek-chat";
+
+    /* =========================================================
+       0. 星空粒子系统（与主页一致的深蓝星空 + 偶发流星）
+       ========================================================= */
+    (function initStarfield() {
+      const canvas = document.getElementById('starfield-canvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d', { alpha: true });
+      if (!ctx) return;
+
+      let cssW = 0, cssH = 0, dpr = 1;
+      const stars = [];
+      const STAR_COUNT = 200;
+      let time = 0;
+      let meteor = null;
+
+      function resize() {
+        dpr = Math.max(1, window.devicePixelRatio || 1);
+        cssW = window.innerWidth;
+        cssH = window.innerHeight;
+        canvas.width = Math.floor(cssW * dpr);
+        canvas.height = Math.floor(cssH * dpr);
+        canvas.style.width = cssW + 'px';
+        canvas.style.height = cssH + 'px';
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      }
+
+      function spawnStar() {
+        const depth = Math.random(); // 0 近 → 1 远
+        return {
+          x: Math.random() * cssW,
+          y: Math.random() * cssH,
+          z: depth,
+          r: (1 - depth) * 1.8 + 0.3,
+          baseAlpha: 0.35 + (1 - depth) * 0.55,
+          twinkleSpeed: 0.5 + Math.random() * 2.2,
+          twinklePhase: Math.random() * Math.PI * 2,
+          vx: (Math.random() - 0.5) * (0.04 + (1 - depth) * 0.12),
+          vy: 0.015 + (1 - depth) * 0.06 + Math.random() * 0.03,
+          hue: Math.random() < 0.18 ? 270 + Math.random() * 40 : 200 + Math.random() * 40
+        };
+      }
+
+      function spawnMeteor() {
+        meteor = {
+          x: cssW * (0.2 + Math.random() * 0.6),
+          y: cssH * Math.random() * 0.3,
+          vx: 3 + Math.random() * 2.5,
+          vy: 1.8 + Math.random() * 1.8,
+          life: 1
+        };
+      }
+
+      function draw() {
+        time += 0.016;
+        ctx.clearRect(0, 0, cssW, cssH);
+
+        // 轻微紫色雾感
+        const fog = ctx.createRadialGradient(
+          cssW * 0.5, cssH * 0.35, 0,
+          cssW * 0.5, cssH * 0.5, Math.max(cssW, cssH) * 0.75
+        );
+        fog.addColorStop(0, 'rgba(70, 40, 140, 0.12)');
+        fog.addColorStop(0.55, 'rgba(20, 30, 90, 0.06)');
+        fog.addColorStop(1, 'rgba(0, 0, 0, 0)');
+        ctx.fillStyle = fog;
+        ctx.fillRect(0, 0, cssW, cssH);
+
+        // 星星
+        for (let i = 0; i < stars.length; i++) {
+          const s = stars[i];
+          s.x += s.vx;
+          s.y += s.vy;
+
+          if (s.y > cssH + 4) { s.y = -4; s.x = Math.random() * cssW; }
+          if (s.x < -4) s.x = cssW + 4;
+          if (s.x > cssW + 4) s.x = -4;
+
+          const twinkle = 0.55 + 0.45 * Math.sin(time * s.twinkleSpeed + s.twinklePhase);
+          const alpha = Math.max(0.08, Math.min(1, s.baseAlpha * twinkle));
+
+          if (s.r > 1.1) {
+            const glow = ctx.createRadialGradient(s.x, s.y, 0, s.x, s.y, s.r * 4);
+            glow.addColorStop(0, `hsla(${s.hue}, 90%, 85%, ${alpha * 0.55})`);
+            glow.addColorStop(0.4, `hsla(${s.hue}, 80%, 70%, ${alpha * 0.18})`);
+            glow.addColorStop(1, 'rgba(0,0,0,0)');
+            ctx.beginPath();
+            ctx.fillStyle = glow;
+            ctx.arc(s.x, s.y, s.r * 4, 0, Math.PI * 2);
+            ctx.fill();
+          }
+
+          ctx.beginPath();
+          ctx.fillStyle = `hsla(${s.hue}, 90%, 92%, ${alpha})`;
+          ctx.arc(s.x, s.y, s.r, 0, Math.PI * 2);
+          ctx.fill();
+        }
+
+        // 偶发流星
+        if (!meteor && Math.random() < 0.004) spawnMeteor();
+        if (meteor) {
+          meteor.x += meteor.vx;
+          meteor.y += meteor.vy;
+          meteor.life -= 0.018;
+
+          if (meteor.life <= 0 || meteor.x > cssW || meteor.y > cssH) {
+            meteor = null;
+          } else {
+            const tailLen = 90;
+            const headX = meteor.x, headY = meteor.y;
+            const tailX = headX - meteor.vx * 14;
+            const tailY = headY - meteor.vy * 14;
+            const g = ctx.createLinearGradient(headX, headY, tailX, tailY);
+            g.addColorStop(0, `rgba(255, 255, 255, ${0.9 * meteor.life})`);
+            g.addColorStop(0.4, `rgba(180, 210, 255, ${0.5 * meteor.life})`);
+            g.addColorStop(1, 'rgba(120, 100, 255, 0)');
+            ctx.beginPath();
+            ctx.strokeStyle = g;
+            ctx.lineWidth = 2;
+            ctx.lineCap = 'round';
+            ctx.moveTo(headX, headY);
+            ctx.lineTo(tailX, tailY);
+            ctx.stroke();
+
+            const glow = ctx.createRadialGradient(headX, headY, 0, headX, headY, 8);
+            glow.addColorStop(0, `rgba(255, 255, 255, ${0.95 * meteor.life})`);
+            glow.addColorStop(1, 'rgba(255, 255, 255, 0)');
+            ctx.beginPath();
+            ctx.fillStyle = glow;
+            ctx.arc(headX, headY, 8, 0, Math.PI * 2);
+            ctx.fill();
+          }
+        }
+
+        requestAnimationFrame(draw);
+      }
+
+      resize();
+      for (let i = 0; i < STAR_COUNT; i++) stars.push(spawnStar());
+      window.addEventListener('resize', () => {
+        resize();
+        while (stars.length < STAR_COUNT) stars.push(spawnStar());
+      });
+      requestAnimationFrame(draw);
+    })();
+
+    /* =========================================================
+       1. Tab 切换
+       ========================================================= */
+    (function initTabs() {
+      const btns = document.querySelectorAll('.tab-btn');
+      const panels = {
+        domestic: document.getElementById('panel-domestic'),
+        overseas: document.getElementById('panel-overseas')
+      };
+
+      btns.forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          btns.forEach(function (b) {
+            const active = b === btn;
+            b.classList.toggle('active', active);
+            b.setAttribute('aria-selected', active ? 'true' : 'false');
+          });
+          Object.keys(panels).forEach(function (key) {
+            panels[key].style.display = key === btn.dataset.tab ? '' : 'none';
+          });
+        });
+      });
+    })();
+
+    /* =========================================================
+       2. 示例快捷填充
+       ========================================================= */
+    (function initExamples() {
+      const SAMPLES = {
+        domestic: {
+          '📕 填示例：敏感肌氨基酸洁面乳': '一款主打“温和不刺激”的氨基酸洁面乳，适合敏感肌，泡沫绵密，洗完不紧绷，定价 69 元。',
+          '🎵 填示例：百元降噪蓝牙耳机': '无线蓝牙耳机：降噪 48dB、续航 40 小时、百元价位，学生党友好。'
+        },
+        overseas: {
+          '📸 填示例：便携式陶瓷手冲壶': '一款便携式陶瓷咖啡手冲壶，设计简约，适合户外露营与旅行，主打颜值与仪式感。',
+          '💼 填示例：外贸企业智能 CRM 系统': '面向外贸企业的一站式智能 CRM 系统，支持多语言客户管理与销售漏斗分析，提升成单效率。'
+        }
+      };
+
+      document.querySelectorAll('.example-chip').forEach(function (chip) {
+        chip.addEventListener('click', function () {
+          const target = document.getElementById(chip.dataset.target);
+          if (!target) return;
+          const text = chip.textContent.trim();
+          const panelKey = target.id.indexOf('overseas') === 0 ? 'overseas' : 'domestic';
+          if (SAMPLES[panelKey] && SAMPLES[panelKey][text]) {
+            target.value = SAMPLES[panelKey][text];
+            target.focus();
+          }
+        });
+      });
+    })();
+
+    /* =========================================================
+       3. DeepSeek API 调用
+       ========================================================= */
+    async function callDeepSeek(systemPrompt, userPrompt) {
+      if (!API_KEY) {
+        throw new Error('⚠️ API 密钥为空：请在 marketing.html 中找到 const API_KEY = ""，填入你的 DeepSeek API Key 后再试。');
+      }
+
+      const res = await fetch(API_URL, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + API_KEY
+        },
+        body: JSON.stringify({
+          model: MODEL,
+          messages: [
+            { role: 'system', content: systemPrompt },
+            { role: 'user', content: userPrompt }
+          ],
+          temperature: 1.0,
+          max_tokens: 2048,
+          stream: false
+        })
+      });
+
+      const data = await res.json().catch(function () { return {}; });
+      if (!res.ok) {
+        const msg = (data.error && data.error.message) || ('HTTP ' + res.status);
+        throw new Error('DeepSeek API 调用失败：' + msg);
+      }
+
+      const content = data.choices &&
+                      data.choices[0] &&
+                      data.choices[0].message &&
+                      data.choices[0].message.content;
+      if (!content) throw new Error('DeepSeek API 返回内容为空，请重试。');
+      return content;
+    }
+
+    /* =========================================================
+       4. 提示词
+       ========================================================= */
+    const PROMPTS = {
+      domesticSystem: [
+        '你是一名深耕小红书、抖音、京东、淘宝等国内平台的资深种草文案专家。',
+        '请注意各平台的“避坑指南”：京东/淘宝严禁过度口语化和感叹号，必须主打硬核参数、性价比和信任感；小红书严禁生硬推销，必须像好姐妹聊天；抖音必须开头3秒抓眼球，有悬念。',
+        '请严格按照以下结构输出，并使用【】标记作为每部分标题。',
+        '【种草文案】',
+        '1. 严格按照用户选择的平台调整语感。',
+        '2. 强调真实感和实用性，以痛点切入。',
+        '3. 恰当使用 emoji 调节氛围，字数 300-500 字。',
+        '【关键词标签】',
+        '输出 5-8 个 #话题标签。',
+        '【圈层黑话解析】',
+        '针对这篇文案，分析里面使用了哪些网感黑话（例如“拔草”、“真香”、“踩雷”、“性价比封神”），并解析为什么这些词能引起该平台用户的共鸣。',
+        '【互动引导】',
+        '根据平台属性生成 1 句自然引导互动的文案。'
+      ].join('\n'),
+ 
+ 
+
+      overseasSystem: [
+    'You are a top-tier English-speaking marketing expert native to the target platform culture.',
+    'IMPORTANT PLATFORM RULES: LinkedIn must be professional, avoid excessive exclamation marks, use business English. Amazon must be highly conversion-focused, avoid slang. Instagram must be visually evocative. TikTok must be short and punchy. Facebook must encourage community discussion.',
+    'Based on the user\'s selling points (in Chinese) and the target platform, output strictly in the following format:',
+    '【ENGLISH COPY】',
+    'Write 1 native, idiomatic English post (80-150 words) tailored to the chosen platform. Absolutely no Chinglish.',
+    '【CULTURAL CONTEXT】',
+    '2-4 concise notes IN CHINESE explaining the cultural context behind this copy. (e.g. Why this tone, why this CTA). This is crucial for cross-cultural learning.',
+    '【HASHTAGS】',
+    '5-8 English hashtags on separate lines.',
+    '【CTA】',
+    '1 short CTA line that naturally leads the reader to act. On the LAST line, give the suggested button label in this exact format: Button: "Shop Now".'
+].join('\n')
+ 
+    };
+
+    /* =========================================================
+       5. 结果解析与渲染
+       ========================================================= */
+    const TITLE_EMOJI = {
+      '种草文案': '📝',
+      '关键词标签': '🏷️',
+      '互动引导': '💬',
+      'ENGLISH COPY': '✍️',
+      'CULTURAL CONTEXT': '🌍',
+      'HASHTAGS': '#️⃣',
+      'CTA': '🎯'
+    };
+
+    // 将模型输出按【标题】标记拆分为多个部分
+    function parseSections(raw) {
+      const re = /【([^】]+)】/g;
+      const matches = Array.from(raw.matchAll(re));
+      if (!matches.length) return [{ title: '', content: raw.trim() }];
+
+      const sections = [];
+      matches.forEach(function (m, i) {
+        const end = i + 1 < matches.length ? matches[i + 1].index : raw.length;
+        const content = raw.slice(m.index + m[0].length, end).trim();
+        if (content) sections.push({ title: m[1].trim(), content: content });
+      });
+      return sections.length ? sections : [{ title: '', content: raw.trim() }];
+    }
+
+    function makeEl(tag, className, text) {
+      const el = document.createElement(tag);
+      if (className) el.className = className;
+      if (text != null) el.textContent = text;
+      return el;
+    }
+
+    // 在正文中提取 CTA 按钮文案（格式：Button: "xxx"）
+    function extractCtaButton(content) {
+      const re = /button\s*[:：]\s*["“'「]?([^"”'」\n\r]+)/i;
+      const m = content.match(re);
+      return m ? m[1].trim() : null;
+    }
+
+    function renderSection(sec) {
+      const card = makeEl('div', 'result-section');
+      const title = (TITLE_EMOJI[sec.title] || '✦') + ' ' + (sec.title || '文案内容');
+      card.appendChild(makeEl('h4', null, title));
+
+      const isHashtag = /hashtag|标签/i.test(sec.title);
+      const isCta = /^\s*cta\b/i.test(sec.title);
+
+      if (isHashtag) {
+        // 标签渲染为 chips
+        const tagRe = /#[\w一-龥_\-]+/g;
+        const tags = sec.content.match(tagRe);
+        if (tags && tags.length) {
+          const row = makeEl('div', 'chip-row');
+          tags.forEach(function (t) { row.appendChild(makeEl('span', 'chip', t)); });
+          card.appendChild(row);
+        }
+        // 其余文字照常显示
+        const rest = sec.content.replace(tagRe, '').trim();
+        if (rest) card.appendChild(makeEl('div', 'result-body', rest));
+      } else if (isCta) {
+    const btnLabel = extractCtaButton(sec.content);
+    const rest = sec.content.replace(/button\s*:\s*["']?([^"'\n\r]+)["']?/gi, '').trim();
+    if (rest) card.appendChild(makeEl('div', 'result-body', rest));
+    
+    // 获取用户填写的产品链接
+    const linkInput = document.getElementById('product-link-input');
+    let productLink = linkInput ? linkInput.value.trim() : '';
+
+    // 如果用户没有填链接，默认跳转到亚马逊首页
+    if (!productLink) {
+        productLink = 'https://www.amazon.com';
+    }
+
+    if (btnLabel) {
+        // 创建可点击的按钮
+        const ctaBtn = makeEl('a', 'cta-preview', btnLabel);
+        ctaBtn.href = productLink;
+        ctaBtn.target = '_blank';
+        ctaBtn.style.display = 'inline-block';
+        ctaBtn.style.padding = '12px 24px';
+        ctaBtn.style.background = 'linear-gradient(90deg, #E6529F, #F66941)';
+        ctaBtn.style.color = 'white';
+        ctaBtn.style.borderRadius = '30px';
+        ctaBtn.style.textDecoration = 'none';
+        ctaBtn.style.fontWeight = 'bold';
+        card.appendChild(ctaBtn);
+
+        // 创建复制链接按钮（解决国内无法跳转外网的问题）
+        const copyBtn = makeEl('button', 'cta-preview', '复制链接');
+        copyBtn.style.marginLeft = '10px';
+        copyBtn.style.padding = '8px 12px';
+        copyBtn.style.borderRadius = '20px';
+        copyBtn.style.border = '1px solid rgba(255,255,255,0.3)';
+        copyBtn.style.background = 'rgba(255,255,255,0.1)';
+        copyBtn.style.color = 'rgba(255,255,255,0.9)';
+        copyBtn.style.cursor = 'pointer';
+        copyBtn.onclick = function() {
+            navigator.clipboard.writeText(productLink);
+        };
+        card.appendChild(copyBtn);
+    }
+} else {
+    card.appendChild(makeEl('div', 'result-body', sec.content));
+}
+
+      return card;
+    }
+
+    function renderResult(container, raw) {
+      container.innerHTML = '';
+
+      // 工具条：复制按钮
+      const toolbar = makeEl('div', 'output-toolbar');
+      const copyBtn = makeEl('button', 'copy-btn', '📋 复制文案');
+      copyBtn.type = 'button';
+      copyBtn.addEventListener('click', function () {
+        copyText(raw, copyBtn);
+      });
+      toolbar.appendChild(copyBtn);
+      container.appendChild(toolbar);
+
+      parseSections(raw).forEach(function (sec) {
+        container.appendChild(renderSection(sec));
+      });
+    }
+
+    function renderError(container, message) {
+      container.innerHTML = '';
+      const err = makeEl('div', 'result-error', message);
+      container.appendChild(err);
+    }
+
+    // 复制到剪贴板（带降级方案）
+    function copyText(text, btn) {
+      const done = function () {
+        btn.textContent = '✅ 已复制';
+        setTimeout(function () { btn.textContent = '📋 复制文案'; }, 1600);
+      };
+      const fallback = function () {
+        try {
+          const ta = document.createElement('textarea');
+          ta.value = text;
+          ta.style.position = 'fixed';
+          ta.style.opacity = '0';
+          document.body.appendChild(ta);
+          ta.select();
+          document.execCommand('copy');
+          document.body.removeChild(ta);
+          done();
+        } catch (e) {
+          btn.textContent = '❌ 复制失败';
+        }
+      };
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(done, fallback);
+      } else {
+        fallback();
+      }
+    }
+
+    /* =========================================================
+       6. 生成入口
+       ========================================================= */
+    function wireGenerate(btnId, outputId, getInput, getSystem) {
+      const btn = document.getElementById(btnId);
+      const output = document.getElementById(outputId);
+      if (!btn || !output) return;
+
+      btn.addEventListener('click', async function () {
+        const input = getInput();
+        if (!input) {
+          renderError(output, '⚠️ 请先输入产品卖点。');
+          return;
+        }
+
+        const original = btn.textContent;
+        btn.disabled = true;
+        btn.textContent = '⏳ AI 生成中，请稍候…';
+        output.innerHTML = '';
+
+        try {
+          if (!API_KEY) {
+            output.innerHTML = '<div style="margin-top:20px; padding:15px; background:rgba(255,200,100,0.1); border-radius:8px; text-align:center; color:#f0e6d3;">🛡️ 当前处于「演示模式」。因为 API 密钥已隐藏，无法生成文案。请在本地填入真实密钥体验。</div>';
+            return;
+          }
+          const raw = await callDeepSeek(getSystem(), input);
+     
+          renderResult(output, raw);
+        } catch (err) {
+          renderError(output, err.message || '生成失败，请重试。');
+        } finally {
+          btn.disabled = false;
+          btn.textContent = original;
+        }
+      });
+    }
+
+    wireGenerate(
+      'btn-domestic',
+      'domestic-output',
+      function () {
+        const platform = document.getElementById('domestic-platform').value;
+        const selling = document.getElementById('domestic-input').value.trim();
+        if (!selling) return '';
+        return '目标平台：' + platform + '\n\n产品卖点：\n' + selling;
+      },
+      function () { return PROMPTS.domesticSystem; }
+    );
+
+    wireGenerate(
+      'btn-overseas',
+      'overseas-output',
+      function () {
+        const platform = document.getElementById('overseas-platform').value;
+        const selling = document.getElementById('overseas-input').value.trim();
+        if (!selling) return '';
+        return 'Target platform: ' + platform + '\n\nProduct selling points (in Chinese):\n' + selling;
+      },
+      function () { return PROMPTS.overseasSystem; }
+    );
+  </script>
+</body>
+</html>

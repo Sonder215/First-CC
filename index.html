@@ -54,6 +54,7 @@
       -webkit-backdrop-filter: blur(12px);
       padding: 14px 20px;
       display: flex;
+      align-items: center;
       gap: 20px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.12) !important;
       font-family: sans-serif;
@@ -112,6 +113,91 @@
 
     .nav-toggle span {
       background: rgba(255, 255, 255, 0.9) !important;
+    }
+
+    /* —— 中 / EN 语言切换 —— */
+    .lang-switch {
+      display: inline-flex;
+      align-items: center;
+      flex-shrink: 0;
+      padding: 3px;
+      margin-left: auto;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      background: rgba(255, 255, 255, 0.06);
+      backdrop-filter: blur(16px) saturate(140%);
+      -webkit-backdrop-filter: blur(16px) saturate(140%);
+      box-shadow:
+        0 8px 24px rgba(0, 0, 0, 0.22),
+        inset 0 1px 0 rgba(255, 255, 255, 0.12);
+      pointer-events: auto;
+    }
+
+    .nav-inner .lang-switch {
+      margin-left: 1.25rem;
+    }
+
+    .lang-switch button {
+      appearance: none;
+      border: 0;
+      background: transparent;
+      color: rgba(255, 255, 255, 0.48);
+      font-family: 'Segoe UI', 'PingFang SC', 'Microsoft YaHei', sans-serif;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.14em;
+      line-height: 1;
+      padding: 7px 12px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: color 0.28s ease, background 0.28s ease, box-shadow 0.28s ease;
+    }
+
+    .lang-switch button.is-active {
+      color: rgba(255, 248, 235, 0.98);
+      background: linear-gradient(135deg, rgba(245, 230, 200, 0.22), rgba(180, 200, 255, 0.16));
+      box-shadow: 0 0 16px rgba(245, 230, 200, 0.18);
+    }
+
+    .lang-switch button:hover:not(.is-active) {
+      color: rgba(255, 255, 255, 0.82);
+    }
+
+    html[data-lang="en"] .hero-name {
+      letter-spacing: 0.12em !important;
+      font-size: clamp(2.2rem, 5.8vw, 3.8rem) !important;
+    }
+
+    html[data-lang="en"] .hero-identity,
+    html[data-lang="en"] .hero-quote {
+      letter-spacing: 0.06em !important;
+    }
+
+    @media (max-width: 768px) {
+      .nav-inner .lang-switch {
+        margin-left: auto;
+      }
+
+      .top-quick-nav {
+        flex-wrap: wrap;
+        row-gap: 10px;
+      }
+    }
+
+    [data-i18n] {
+      transition: opacity 0.22s ease;
+    }
+
+    html.lang-switching [data-i18n],
+    html.lang-switching .hero-name,
+    html.lang-switching .hero-identity,
+    html.lang-switching .hero-quote,
+    html.lang-switching .featured-title,
+    html.lang-switching #featured-posts,
+    html.lang-switching .fixed-footer,
+    html.lang-switching .footer-info,
+    html.lang-switching .footer-quote {
+      opacity: 0.35;
     }
 
     .hero {
@@ -334,7 +420,9 @@
       body.meteor-cursor a,
       body.meteor-cursor button,
       body.meteor-cursor .nav-toggle,
-      body.meteor-cursor .filter-btn {
+      body.meteor-cursor .filter-btn,
+      body.meteor-cursor .lang-switch,
+      body.meteor-cursor .lang-switch button {
         cursor: none !important;
       }
     }
@@ -364,6 +452,7 @@
   </style>
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 
+  
 </head>
 <body>
   <!-- 星空粒子画布（最底层） -->
@@ -371,9 +460,14 @@
 
   <!-- 顶部导航条 -->
   <div class="top-quick-nav">
-    <a href="index.html">🏠 个人主页</a>
-    <a href="chat.html">📧 AI 外贸邮件助手</a>
-  <a href="corpus.html" style="text-decoration: none; color: #fff;">📖 AI 英语语料库</a>
+    <a href="index.html" data-i18n="quickHome">🏠 个人主页</a>
+    <a href="chat.html" data-i18n="quickChat">📧 AI 外贸邮件助手</a>
+    <a href="corpus.html" style="text-decoration: none; color: #fff;" data-i18n="quickCorpus">📖 AI 英语语料库</a>
+    <a href="marketing.html" style="text-decoration: none; color: #fff;">📈 AI 营销助手</a>
+    <div class="lang-switch" role="group" aria-label="Language">
+      <button type="button" data-lang="zh" class="is-active" aria-pressed="true">中</button>
+      <button type="button" data-lang="en" aria-pressed="false">EN</button>
+    </div>
   </div>
 
   <div class="parallax-stage">
@@ -385,10 +479,14 @@
             <a href="index.html">L · K</a>
           </div>
           <ul class="nav-links">
-            <li><a href="index.html" data-page="home">Home</a></li>
-            <li><a href="about.html" data-page="about">About</a></li>
-            <li><a href="thoughts.html" data-page="thoughts">Thoughts</a></li>
+            <li><a href="index.html" data-page="home" data-i18n="navHome">首页</a></li>
+            <li><a href="about.html" data-page="about" data-i18n="navAbout">关于</a></li>
+            <li><a href="thoughts.html" data-page="thoughts" data-i18n="navThoughts">随想</a></li>
           </ul>
+          <div class="lang-switch" role="group" aria-label="Language">
+            <button type="button" data-lang="zh" class="is-active" aria-pressed="true">中</button>
+            <button type="button" data-lang="en" aria-pressed="false">EN</button>
+          </div>
           <button class="nav-toggle" aria-label="Toggle navigation">
             <span></span>
             <span></span>
@@ -400,18 +498,47 @@
       <!-- Hero Section -->
       <section class="hero">
         <div class="hero-content">
-          <h1 class="hero-name">AI 智能外语工作台</h1>
-          <p class="hero-identity">专注大模型在英语学习与跨境商务中的智能应用</p>
-          <p class="hero-quote">🚀 目前已上线：AI 外贸邮件助手 ｜ AI 英语语料库</p>
-  
+          <h1 class="hero-name" data-i18n="heroName">AI 智能外语工作台</h1>
+          <p class="hero-identity" data-i18n="heroIdentity">专注大模型在英语学习与跨境商务中的智能应用</p>
+          <p class="hero-quote" data-i18n="heroQuote">🚀 目前已上线：AI 外贸邮件助手 ｜ AI 英语语料库</p>
+         
         </div>
         <div class="hero-scroll">
           <span></span>
           <small>Scroll</small>
         </div>
       </section>
-
-      
+      <div class="profile-fade-in" style="width: 90%; margin: 60px auto; padding: 50px; background: rgba(255, 255, 255, 0.12); border: 1px solid rgba(255, 255, 255, 0.3); border-radius: 20px; display: flex; gap: 60px; align-items: flex-end; box-shadow: 0 15px 40px rgba(0, 0, 0, 0.6);">
+    
+        <!-- 左侧区域：上面放引言，下面放照片 -->
+        <div style="flex: 1; display: flex; flex-direction: column; justify-content: space-between; align-items: flex-start; gap: 40px;">
+            <div style="border-left: 3px solid rgba(255,255,255,0.4); padding-left: 15px;">
+                <h2 style="margin: 0 0 5px 0; font-size: 1.5rem; background: linear-gradient(90deg, #00F2FE 0%, #4FACFE 50%, #F093FB 100%); -webkit-background-clip: text; background-clip: text; color: transparent;">❝ 以语言为桥，以科技为翼</h2>
+                <p style="margin: 0; font-size: 1rem; color: rgba(255,255,255,0.95); font-family: 'Playfair Display', 'Georgia', 'Times New Roman', serif; font-style: italic; letter-spacing: 1px;">"Bridge with language, fly with technology."</p >
+            </div>
+            <img src="assets/me.png.png" alt="刘凯照片" style="width: 300px; height: 380px; object-fit: cover; border-radius: 10px; border: 4px solid rgba(255,255,255,0.6); box-shadow: 0 10px 25px rgba(0,0,0,0.5);">
+        </div>
+    
+        <!-- 右侧区域：内容（全渐变，无灰色） -->
+        <div style="flex: 2;">
+            <!-- 姓名：蓝→紫→橙粉 全渐变，亮度拉满 -->
+            <h1 style="font-size: 4rem; margin: 0 0 10px 0; background: linear-gradient(90deg, #00C9FF 0%, #92FE9D 25%, #A18CD1 50%, #FF758C 75%, #FF7EB3 100%); -webkit-background-clip: text; background-clip: text; color: transparent;">刘凯</h1>
+            <p style="color: #ffffff; margin-bottom: 30px;">英语 × AI 复合型人才 | 具备国际视野与清晰职业规划</p >
+            
+            <!-- 四个小标题：分别采用不同亮色渐变，告别单一色！ -->
+            <h3 style="margin: 20px 0 5px 0; font-size: 1.6rem; background: linear-gradient(90deg, #00C9FF, #92FE9D); -webkit-background-clip: text; background-clip: text; color: transparent;">英语硬实力</h3>
+            <p style="color: rgba(255,255,255,0.95); margin: 0 0 10px 0;">斩获“外研社·国才杯”笔译大赛三等奖，多次荣获英语词汇竞赛奖项。</p >
+    
+            <h3 style="margin: 20px 0 5px 0; font-size: 1.6rem; background: linear-gradient(90deg, #A18CD1, #FBC2EB); -webkit-background-clip: text; background-clip: text; color: transparent;">AI与编程实战</h3>
+            <p style="color: rgba(255,255,255,0.95); margin: 0 0 10px 0;">熟练运用 DeepSeek、Cursor、Claude Code 等前沿 AI 工具，熟练掌握数据库，目前正系统自学 Python。</p >
+    
+            <h3 style="margin: 20px 0 5px 0; font-size: 1.6rem; background: linear-gradient(90deg, #FF9A9E, #FAD0C4); -webkit-background-clip: text; background-clip: text; color: transparent;">新媒体创作能力</h3>
+            <p style="color: rgba(255,255,255,0.95); margin: 0 0 10px 0;">参与“校友访谈”与“用英语讲好中国故事”短视频大赛，均获校级二等奖。</p >
+    
+            <h3 style="margin: 20px 0 5px 0; font-size: 1.6rem; background: linear-gradient(90deg, #43E97B, #38F9D7); -webkit-background-clip: text; background-clip: text; color: transparent;">综合素质</h3>
+            <p style="color: rgba(255,255,255,0.95); margin: 0 0 10px 0;">前校合唱团成员，校志愿者协会成员，兼具艺术素养与团队协作精神。</p >
+        </div>
+    </div>
 
       <!-- Featured Thoughts -->
       <section class="section featured-thoughts-section">
@@ -870,18 +997,16 @@
 
         <div class="container-wide">
           <div class="featured-title">
-            <h2>Recent Thoughts</h2>
+            <h2 data-i18n="featuredTitle">近期随想</h2>
             <p class="fleuron-sm">❦</p>
-            <p>
-              Reflections on language, literature, and the spaces between
-            </p>
+            <p data-i18n="featuredSubtitle">关于语言、文学，以及其间的空白</p>
           </div>
           <div class="posts-grid" id="featured-posts">
             <!-- Rendered by JS -->
           </div>
           <div class="view-all-wrap">
-            <a href="thoughts.html" class="view-all-link">
-              View All Thoughts →
+            <a href="thoughts.html" class="view-all-link" data-i18n="viewAll">
+              查看全部随想 →
             </a>
           </div>
         </div>
@@ -889,10 +1014,8 @@
 
       <!-- Footer -->
       <footer class="site-footer">
-        <p class="footer-quote">"To have another language is to possess a second soul." — Charlemagne</p>
-        <p class="footer-info">
-          天津科技大学 · <span>外国语学院 英语系</span> · 2025–2029
-        </p>
+        <p class="footer-quote" data-i18n="footerQuote">「掌握另一种语言，便是拥有第二个灵魂。」——查理曼</p>
+        <p class="footer-info" data-i18n="footerInfo">天津科技大学 · 外国语学院 英语系 · 2025–2029</p>
       </footer>
     </div>
   </div>
@@ -903,21 +1026,122 @@
   <script src="js/posts.js"></script>
   <script src="js/main.js"></script>
   <script>
-    // Render featured posts on home page
-    (function() {
-      const container = document.getElementById('featured-posts');
-      if (!container) return;
-      if (typeof getRecentPosts !== 'function' || typeof renderPostCard !== 'function') return;
-      const recent = getRecentPosts(3);
-      container.innerHTML = recent.map(renderPostCard).join('');
+    (function () {
+      const STORAGE_KEY = 'site-lang';
+      const I18N = {
+        zh: {
+          title: '首页 · Home',
+          quickHome: '🏠 个人主页',
+          quickChat: '📧 AI 外贸邮件助手',
+          quickCorpus: '📖 AI 英语语料库',
+          navHome: '首页',
+          navAbout: '关于',
+          navThoughts: '随想',
+          heroName: 'AI 智能外语工作台',
+          heroIdentity: '专注大模型在英语学习与跨境商务中的智能应用',
+          heroQuote: '🚀 目前已上线：AI 外贸邮件助手 ｜ AI 英语语料库',
+          featuredTitle: '近期随想',
+          featuredSubtitle: '关于语言、文学，以及其间的空白',
+          viewAll: '查看全部随想 →',
+          footerQuote: '「掌握另一种语言，便是拥有第二个灵魂。」——查理曼',
+          footerInfo: '天津科技大学 · 外国语学院 英语系 · 2025–2029',
+          fixedFooter: '刘凯 · 天津科技大学 外国语学院 · 2025级本科生'
+        },
+        en: {
+          title: 'Home · 首页',
+          quickHome: '🏠 Home',
+          quickChat: '📧 AI Business Email Assistant',
+          quickCorpus: '📖 AI English Corpus',
+          navHome: 'Home',
+          navAbout: 'About',
+          navThoughts: 'Thoughts',
+          heroName: 'AI Language Workbench',
+          heroIdentity: 'Applying large language models to English learning and cross-border business',
+          heroQuote: '🚀 Now live: AI Business Email Assistant ｜ AI English Corpus',
+          featuredTitle: 'Recent Thoughts',
+          featuredSubtitle: 'Reflections on language, literature, and the spaces between',
+          viewAll: 'View All Thoughts →',
+          footerQuote: '"To have another language is to possess a second soul." — Charlemagne',
+          footerInfo: 'Tianjin University of Science and Technology · School of Foreign Languages, English · 2025–2029',
+          fixedFooter: 'Liu Kai · TUST School of Foreign Languages · Undergraduate, Class of 2025'
+        }
+      };
 
-      setTimeout(() => {
-        document.querySelectorAll('.fade-up').forEach(el => {
-          if (el.getBoundingClientRect().top < window.innerHeight) {
-            el.classList.add('visible');
-          }
+      function getLang() {
+        const saved = localStorage.getItem(STORAGE_KEY);
+        return saved === 'en' ? 'en' : 'zh';
+      }
+
+      function renderFeatured(lang) {
+        const container = document.getElementById('featured-posts');
+        if (!container || typeof getRecentPosts !== 'function') return;
+        const isEn = lang === 'en';
+        const recent = getRecentPosts(3);
+        container.innerHTML = recent.map(function (post) {
+          const dateFormatted = new Date(post.date).toLocaleDateString(isEn ? 'en-US' : 'zh-CN', {
+            year: 'numeric',
+            month: 'long',
+            day: 'numeric'
+          });
+          const title = isEn ? post.title : post.titleZh;
+          const subtitle = isEn ? post.titleZh : post.title;
+          const excerpt = isEn ? post.excerpt : post.excerptZh;
+          const reading = isEn ? post.readingTime : post.readingTimeZh;
+          const category = isEn ? post.category.toUpperCase() : post.categoryZh;
+          return (
+            '<article class="post-card fade-up visible" style="--card-color: ' + post.coverColor + ';">' +
+              '<div class="card-accent" style="display: none;"></div>' +
+              '<div class="card-body" style="display: flex; flex-direction: column; align-items: flex-start; gap: 5px; padding: 20px 24px;">' +
+                '<div class="card-category" style="color: transparent; background-image: linear-gradient(135deg, #ffffff 0%, #fbc2eb 50%, #a18cd1 100%); -webkit-background-clip: text; background-clip: text; font-size: 1.2rem; font-weight: 600; letter-spacing: 2px; text-shadow: 0 0 20px rgba(255, 255, 255, 0.4);">' + category + '</div>' +
+                '<div class="card-date" style="color: rgba(255, 255, 255, 0.7); font-size: 0.9rem; letter-spacing: 1px; margin-bottom: 6px;">' + dateFormatted + '</div>' +
+                '<h3 style="margin: 4px 0;">' + title + '</h3>' +
+                '<p class="card-excerpt" style="color: rgba(255, 255, 255, 0.75); line-height: 1.6; margin-top: 6px;">' + excerpt + '</p>' +
+                '<div class="card-meta" style="display: flex; flex-direction: column; align-items: flex-start; gap: 4px; margin-top: 10px;">' +
+                  '<div style="color: rgba(255,255,255,0.85); font-size: 1rem; letter-spacing: 1px;">' + reading + '</div>' +
+                  '<div style="color: transparent; background-image: linear-gradient(135deg, #4facfe 0%, #00f2fe 50%, #fa709a 100%); -webkit-background-clip: text; background-clip: text; font-size: 1.1rem; letter-spacing: 0.1em;">✦ ' + subtitle + '</div>' +
+                '</div>' +
+              '</div>' +
+            '</article>'
+          );
+        }).join('');
+      }
+
+      function applyLang(lang) {
+        const dict = I18N[lang] || I18N.zh;
+        document.documentElement.lang = lang === 'en' ? 'en' : 'zh-CN';
+        document.documentElement.setAttribute('data-lang', lang);
+        document.title = dict.title;
+
+        document.querySelectorAll('[data-i18n]').forEach(function (el) {
+          const key = el.getAttribute('data-i18n');
+          if (dict[key] != null) el.textContent = dict[key];
         });
-      }, 100);
+
+        document.querySelectorAll('.lang-switch button').forEach(function (btn) {
+          const active = btn.getAttribute('data-lang') === lang;
+          btn.classList.toggle('is-active', active);
+          btn.setAttribute('aria-pressed', active ? 'true' : 'false');
+        });
+
+        renderFeatured(lang);
+        localStorage.setItem(STORAGE_KEY, lang);
+      }
+
+      document.querySelectorAll('.lang-switch').forEach(function (group) {
+        group.addEventListener('click', function (event) {
+          const btn = event.target.closest('button[data-lang]');
+          if (!btn) return;
+          const next = btn.getAttribute('data-lang');
+          if (next === getLang()) return;
+          document.documentElement.classList.add('lang-switching');
+          window.setTimeout(function () {
+            applyLang(next);
+            document.documentElement.classList.remove('lang-switching');
+          }, 160);
+        });
+      });
+
+      applyLang(getLang());
     })();
   </script>
   <script>
@@ -1643,8 +1867,34 @@ if (intersects.length > 0) {
       pointer-events: none;   /* 不干扰鼠标交互 */
   }
 </style>
-<footer class="fixed-footer">
+<footer class="fixed-footer" data-i18n="fixedFooter">
   刘凯 · 天津科技大学 外国语学院 · 2025级本科生
 </footer>
 </body>
+<script>
+  document.addEventListener("DOMContentLoaded", () => {
+      const fadeEls = document.querySelectorAll('.profile-fade-in');
+      const observer = new IntersectionObserver((entries) => {
+          entries.forEach(entry => {
+              // 当名片进入屏幕时（渐入）
+              if (entry.isIntersecting) {
+                  entry.target.style.opacity = "1";
+                  entry.target.style.transform = "translateY(0)";
+              } 
+              // 当名片离开屏幕时（渐出）
+              else {
+                  entry.target.style.opacity = "0";
+                  entry.target.style.transform = "translateY(30px)";
+              }
+          });
+      }, { threshold: 0 }); // 阈值设为0：只要有边缘进入屏幕就立刻触发，最灵敏！
+
+      fadeEls.forEach(el => {
+          el.style.opacity = "0";
+          el.style.transform = "translateY(30px)";
+          el.style.transition = "opacity 1.8s ease-in-out, transform 1.8s ease-in-out";
+          observer.observe(el);
+      });
+  });
+</script>
 </html>
