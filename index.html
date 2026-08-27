@@ -449,34 +449,53 @@
       opacity: 1 !important;
       visibility: visible !important;
     }
-  /* 移动端适配：名片上下排列 + 调整留白 */
-@media (max-width: 768px) {
-    .profile-fullwidth {
+    @media (max-width: 768px) {
+    .profile-fade-in {
         flex-direction: column !important;
-        gap: 30px !important;
-        padding: 25px !important;
-        width: 92% !important;
         align-items: center !important;
+        text-align: center !important;
+        gap: 30px !important;
+        padding: 30px 20px !important;
+        width: 95% !important;
     }
     .profile-left, .profile-right {
         width: 100% !important;
         flex: none !important;
-    }
-    .profile-left img {
-        width: 180px !important;
-        height: 220px !important;
-        margin: 0 auto !important;
+        align-items: center !important;
     }
     .profile-left h1 {
-        font-size: 3rem !important;
-    }
-    .hero-content h1 {
         font-size: 2.5rem !important;
-        line-height: 1.2 !important;
+        margin-bottom: 10px !important;
     }
-    .hero-content p {
+    .profile-left .tagline {
+        margin-bottom: 30px !important;
         font-size: 1rem !important;
-        padding: 0 10px !important;
+    }
+    .profile-left img {
+        width: 220px !important;
+        height: auto !important;
+        margin: 0 auto !important;
+    }
+    .fixed-footer {
+        position: static !important;
+        margin-top: 40px !important;
+        padding-bottom: 20px !important;
+    }
+    
+    /* 新增修复：强制显示右侧简介内容 */
+    .profile-right {
+        display: block !important;
+        width: 100% !important;
+        flex: none !important;
+        overflow: visible !important;
+        max-height: none !important;
+        text-align: left !important;
+    }
+    .profile-right .section {
+        display: block !important;
+        width: 100% !important;
+        margin-bottom: 20px !important;
+        text-align: left !important;
     }
 }
   </style>
