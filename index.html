@@ -449,6 +449,36 @@
       opacity: 1 !important;
       visibility: visible !important;
     }
+  /* 移动端适配：名片上下排列 + 调整留白 */
+@media (max-width: 768px) {
+    .profile-fullwidth {
+        flex-direction: column !important;
+        gap: 30px !important;
+        padding: 25px !important;
+        width: 92% !important;
+        align-items: center !important;
+    }
+    .profile-left, .profile-right {
+        width: 100% !important;
+        flex: none !important;
+    }
+    .profile-left img {
+        width: 180px !important;
+        height: 220px !important;
+        margin: 0 auto !important;
+    }
+    .profile-left h1 {
+        font-size: 3rem !important;
+    }
+    .hero-content h1 {
+        font-size: 2.5rem !important;
+        line-height: 1.2 !important;
+    }
+    .hero-content p {
+        font-size: 1rem !important;
+        padding: 0 10px !important;
+    }
+}
   </style>
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 
