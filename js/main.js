@@ -8,6 +8,7 @@ document.addEventListener('DOMContentLoaded', () => {
   initScrollAnimations();
   initReadingProgress();
   initSkillBars();
+  initWorkflowLinks();
 });
 
 /* ============================================================
@@ -138,4 +139,25 @@ function initSkillBars() {
   );
 
   bars.forEach(bar => observer.observe(bar));
+}
+
+/* ============================================================
+   WORKFLOW STEP LINKS — guaranteed navigation
+   ============================================================ */
+
+function initWorkflowLinks() {
+  // Force plain left-clicks on workflow step links to navigate, even if
+  // another handler stops propagation or suppresses the default action.
+  document.addEventListener('click', (event) => {
+    const target = event.target && event.target.closest
+      ? event.target.closest('a.wf-step')
+      : null;
+    if (!target) return;
+
+    // Keep modified / middle clicks on their default (new tab etc.) behavior.
+    if (event.button !== 0 || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+
+    event.preventDefault();
+    window.location.href = target.href;
+  }, true);
 }

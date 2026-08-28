@@ -505,10 +505,363 @@
         text-align: left !important;
     }
 }
-  </style>
+    /* —— AI 跨文化出海工作流：树状流星 —— */
+    .wf-container {
+      max-width: 1160px;
+      margin: 110px auto 70px;
+      padding: 0 24px;
+      position: relative;
+    }
+
+    .wf-title {
+      text-align: center;
+      font-size: clamp(1.9rem, 3.8vw, 2.7rem);
+      letter-spacing: 0.16em;
+      line-height: 1.5;
+      margin: 0;
+      background: linear-gradient(105deg, #f5e6c8 0%, #ffe9b0 28%, #fffef5 55%, #dce8f6 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+      filter: drop-shadow(0 0 12px rgba(245, 230, 200, 0.35));
+    }
+
+    .wf-subtitle {
+      text-align: center;
+      color: rgba(255, 255, 255, 0.62);
+      font-size: 0.98rem;
+      letter-spacing: 0.12em;
+      margin: 14px 0 0;
+    }
+
+    /* 主轨道容器：倾斜流星曲线贯穿 */
+    .wf-track {
+      position: relative;
+      height: 600px;
+      max-width: 1120px;
+      margin: 64px auto 0;
+    }
+
+    .wf-svg {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+      pointer-events: none;
+    }
+
+    /* 主线：柔和光晕层（渐变银河） */
+    .wf-main-soft {
+      opacity: 0;
+    }
+    .wf-track.wf-run .wf-main-soft {
+      animation: wfGlowIn 2.6s ease forwards;
+    }
+
+    /* 主线：亮核层（自左向右生长） */
+    .wf-main-core {
+      stroke-dasharray: 1600;
+      stroke-dashoffset: 1600;
+    }
+    .wf-track.wf-run .wf-main-core {
+      animation: wfDraw 2.4s cubic-bezier(0.25, 0.6, 0.3, 1) forwards;
+    }
+
+    /* 主线：流动光效层（划过星空的流光） */
+    .wf-main-flow {
+      stroke-dasharray: 130 1600;
+      stroke-dashoffset: 0;
+      opacity: 0;
+    }
+    .wf-track.wf-run .wf-main-flow {
+      animation:
+        wfFlowIn 0.5s ease 2s forwards,
+        wfFlowRun 3.8s linear 2.2s infinite;
+    }
+
+    /* 分支细线：随节点淡入 */
+    .wf-branches {
+      opacity: 0;
+      transition: opacity 1.1s ease 0.3s;
+    }
+    .wf-track.wf-in .wf-branches {
+      opacity: 1;
+    }
+
+    @keyframes wfDraw { to { stroke-dashoffset: 0; } }
+    @keyframes wfGlowIn { to { opacity: 0.3; } }
+    @keyframes wfFlowIn { to { opacity: 0.95; } }
+    @keyframes wfFlowRun { to { stroke-dashoffset: -1730; } }
+
+    /* 星球节点 */
+    .wf-step {
+      position: absolute;
+      display: block;
+      width: 280px;
+      text-decoration: none;
+      z-index: 5;
+      opacity: 0;
+      transform: translateY(26px);
+      transition: opacity 0.9s ease, transform 0.9s ease;
+    }
+    .wf-track.wf-in .wf-step {
+      opacity: 1;
+      transform: translateY(0);
+    }
+    .wf-track.wf-in .wf-step.n1 { transition-delay: 0.4s; }
+    .wf-track.wf-in .wf-step.n2 { transition-delay: 0.75s; }
+    .wf-track.wf-in .wf-step.n3 { transition-delay: 1.1s; }
+
+    /* 三节点沿倾斜主线错落分布 */
+    .wf-step.n1 { left: 9.67%;  top: 34.33%; }
+    .wf-step.n2 { left: 31.67%; top: 63.5%; }
+    .wf-step.n3 { left: 64.5%;  top: 16%; }
+
+    .wf-float {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      animation: wfFloat 7s ease-in-out infinite;
+    }
+    .wf-step.n1 .wf-float { flex-direction: row; }
+    .wf-step.n2 .wf-float {
+      flex-direction: column;
+      gap: 13px;
+      text-align: center;
+      animation-delay: -2.3s;
+    }
+    .wf-step.n3 .wf-float {
+      flex-direction: row-reverse;
+      text-align: right;
+      animation-delay: -4.4s;
+    }
+
+    @keyframes wfFloat {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-7px); }
+    }
+
+    /* 悬浮星球本体 */
+    .wf-planet {
+      position: relative;
+      width: 88px;
+      height: 88px;
+      border-radius: 50%;
+      flex-shrink: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      --pc: 150, 175, 255;
+      background: radial-gradient(circle at 32% 28%,
+        rgba(255, 255, 255, 0.95) 0%,
+        rgba(255, 255, 255, 0.35) 20%,
+        rgba(var(--pc), 0.3) 46%,
+        rgba(var(--pc), 0.12) 72%,
+        rgba(20, 16, 60, 0.6) 100%);
+      box-shadow:
+        0 0 30px rgba(var(--pc), 0.38),
+        0 0 68px rgba(var(--pc), 0.16),
+        inset -10px -12px 26px rgba(8, 8, 40, 0.55),
+        inset 5px 7px 16px rgba(255, 255, 255, 0.22);
+      transition: box-shadow 0.5s ease;
+    }
+    .wf-step.n1 .wf-planet { --pc: 140, 170, 255; }
+    .wf-step.n2 .wf-planet { --pc: 205, 150, 255; }
+    .wf-step.n3 .wf-planet { --pc: 120, 225, 205; }
+
+    /* 星球环 */
+    .wf-planet::after {
+      content: "";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      width: 124%;
+      height: 24%;
+      border: 1.5px solid rgba(255, 255, 255, 0.5);
+      border-radius: 50%;
+      transform: translate(-50%, -50%) rotate(-16deg);
+      box-shadow: 0 0 12px rgba(180, 200, 255, 0.3);
+      pointer-events: none;
+    }
+
+    .wf-emoji {
+      font-size: 27px;
+      line-height: 1;
+      filter: drop-shadow(0 0 8px rgba(255, 255, 255, 0.65));
+      transition: transform 0.4s ease;
+    }
+
+    /* 节点文字 */
+    .wf-text { flex: 1; min-width: 0; }
+    .wf-node-title {
+      display: block;
+      font-size: 1.08rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      color: rgba(255, 248, 235, 0.95);
+      text-shadow: 0 0 14px rgba(245, 230, 200, 0.22);
+      margin-bottom: 7px;
+      transition: color 0.35s ease, text-shadow 0.35s ease;
+    }
+    .wf-node-desc {
+      display: block;
+      font-size: 0.88rem;
+      letter-spacing: 0.04em;
+      line-height: 1.55;
+      color: rgba(255, 255, 255, 0.66);
+      margin-bottom: 9px;
+    }
+    .wf-node-cta {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.8rem;
+      letter-spacing: 0.1em;
+      color: rgba(190, 210, 255, 0.85);
+      transition: color 0.35s ease;
+    }
+    .wf-cta-arrow { transition: transform 0.35s ease; }
+
+    /* 悬浮：呼吸浮动（仅限鼠标设备） */
+    @media (hover: hover) and (pointer: fine) {
+      .wf-step:hover .wf-planet {
+        animation: wfBreathe 2.6s ease-in-out infinite;
+      }
+      .wf-step:hover .wf-node-title {
+        color: #fff;
+        text-shadow: 0 0 18px rgba(245, 230, 200, 0.5);
+      }
+      .wf-step:hover .wf-node-cta { color: #fff; }
+      .wf-step:hover .wf-cta-arrow { transform: translateX(5px); }
+      .wf-step:hover .wf-emoji { transform: scale(1.1); }
+    }
+
+    @keyframes wfBreathe {
+      0%, 100% {
+        transform: scale(1);
+        box-shadow:
+          0 0 30px rgba(var(--pc), 0.38),
+          0 0 68px rgba(var(--pc), 0.16),
+          inset -10px -12px 26px rgba(8, 8, 40, 0.55),
+          inset 5px 7px 16px rgba(255, 255, 255, 0.22);
+      }
+      50% {
+        transform: scale(1.06);
+        box-shadow:
+          0 0 44px rgba(var(--pc), 0.6),
+          0 0 90px rgba(var(--pc), 0.28),
+          inset -10px -12px 26px rgba(8, 8, 40, 0.55),
+          inset 5px 7px 16px rgba(255, 255, 255, 0.22);
+      }
+    }
+
+    /* —— 修复：工作流节点链接可点击保障（防遮挡 / 防禁用） —— */
+    .wf-step {
+      pointer-events: auto !important;
+      cursor: pointer !important;
+      z-index: 6 !important;
+    }
+    .wf-svg,
+    .wf-particle,
+    .wf-planet::after {
+      pointer-events: none !important;
+    }
+
+    /* —— 修复：CTA 按钮悬停效果（亮白 + 下划线 + 箭头右移） ——
+       页面中 CTA 实际类名为 .wf-node-cta，同时覆盖 .wf-btn 以防后续改名 */
+    .wf-step:hover .wf-node-cta,
+    .wf-step:hover .wf-btn {
+      color: #ffffff !important;
+      text-decoration: underline !important;
+      text-underline-offset: 5px;
+      text-decoration-color: rgba(255, 255, 255, 0.85);
+      text-shadow: 0 0 12px rgba(255, 255, 255, 0.5);
+    }
+    .wf-step:hover .wf-cta-arrow {
+      transform: translateX(6px);
+    }
+
+    /* 漂浮发光粒子 */
+    .wf-particle {
+      position: absolute;
+      width: var(--s, 3px);
+      height: var(--s, 3px);
+      border-radius: 50%;
+      background: radial-gradient(circle,
+        rgba(255, 255, 255, 0.95) 0%,
+        rgba(170, 190, 255, 0.55) 60%,
+        transparent 100%);
+      box-shadow:
+        0 0 10px rgba(170, 190, 255, 0.75),
+        0 0 22px rgba(140, 160, 255, 0.3);
+      animation: wfTwinkle var(--dur, 3.2s) ease-in-out var(--d, 0s) infinite;
+      pointer-events: none;
+    }
+    .wf-particle.pink {
+      background: radial-gradient(circle,
+        rgba(255, 255, 255, 0.95) 0%,
+        rgba(255, 200, 240, 0.55) 60%,
+        transparent 100%);
+      box-shadow:
+        0 0 10px rgba(255, 200, 240, 0.75),
+        0 0 22px rgba(255, 170, 225, 0.3);
+    }
+    .wf-particle.gold {
+      background: radial-gradient(circle,
+        rgba(255, 255, 255, 0.95) 0%,
+        rgba(255, 230, 170, 0.55) 60%,
+        transparent 100%);
+      box-shadow:
+        0 0 10px rgba(255, 230, 170, 0.75),
+        0 0 22px rgba(255, 210, 140, 0.3);
+    }
+
+    @keyframes wfTwinkle {
+      0%, 100% { transform: translate(-50%, -50%) scale(0.65); opacity: 0.25; }
+      50% { transform: translate(-50%, -50%) scale(1.15); opacity: 0.95; }
+    }
+
+    /* 移动端：垂直排列，隐藏主线 */
+    @media (max-width: 768px) {
+      .wf-container {
+        margin: 90px auto 60px;
+        padding: 0 18px;
+      }
+      .wf-title { letter-spacing: 0.1em; }
+      .wf-subtitle { font-size: 0.9rem; letter-spacing: 0.06em; }
+      .wf-track {
+        height: auto;
+        margin-top: 44px;
+      }
+      .wf-svg,
+      .wf-particle { display: none; }
+      .wf-step,
+      .wf-step.n1,
+      .wf-step.n2,
+      .wf-step.n3 {
+        position: static;
+        width: 100%;
+        text-align: center;
+      }
+      .wf-step + .wf-step { margin-top: 56px; }
+      .wf-float,
+      .wf-step.n1 .wf-float,
+      .wf-step.n3 .wf-float {
+        flex-direction: column;
+        align-items: center;
+        gap: 14px;
+        text-align: center;
+      }
+      .wf-node-title { font-size: 1.12rem; }
+      .wf-node-desc { font-size: 0.9rem; }
+    }
+
+
+</style>
   <script src="https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.min.js"></script>
 
-  
 </head>
 <body>
   <!-- 星空粒子画布（最底层） -->
@@ -596,474 +949,86 @@
         </div>
     </div>
 
-      <!-- Featured Thoughts -->
-      <section class="section featured-thoughts-section">
-        <style>
-          /* —— Recent Thoughts：深色弥散光晕 + 极简杂志排版 —— */
-          .featured-thoughts-section {
-            background: transparent !important;
-            border: none !important;
-            box-shadow: none !important;
-            position: relative;
-            overflow: visible;
-            padding-top: clamp(3rem, 8vw, 5.5rem);
-            padding-bottom: clamp(3rem, 8vw, 5.5rem);
-          }
+      <!-- AI 跨文化出海工作流：树状流星 -->
+      <section class="section">
+        <div class="wf-container">
+          <h2 class="wf-title">AI 跨文化出海工作流</h2>
+          <p class="wf-subtitle">从洞察全球市场，到促成真实订单，再到自我能力进化</p>
 
-          .featured-thoughts-section .container-wide {
-            background: transparent !important;
-            border: none !important;
-            box-shadow: none !important;
-          }
+          <div class="wf-track" id="wf-track">
+            <svg class="wf-svg" viewBox="0 0 1200 600" preserveAspectRatio="none" aria-hidden="true">
+              <defs>
+                <linearGradient id="wf-line-grad" gradientUnits="userSpaceOnUse" x1="0" y1="380" x2="1200" y2="150">
+                  <stop offset="0" stop-color="#5a6fff" stop-opacity="0"/>
+                  <stop offset="0.28" stop-color="#8fa4ff" stop-opacity="0.55"/>
+                  <stop offset="0.7" stop-color="#ffc8ef" stop-opacity="0.9"/>
+                  <stop offset="1" stop-color="#ffffff" stop-opacity="0.98"/>
+                </linearGradient>
+                <filter id="wf-soft-blur" x="-30%" y="-300%" width="160%" height="700%">
+                  <feGaussianBlur stdDeviation="5"/>
+                </filter>
+              </defs>
 
-          .featured-thoughts-section .featured-title {
-            text-align: center;
-            margin-bottom: clamp(2.5rem, 6vw, 4rem);
-            background: none !important;
-            border: none !important;
-          }
+              <!-- 三根分支细线 -->
+              <g class="wf-branches" fill="none" stroke="rgba(205, 215, 255, 0.6)" stroke-width="1.2" stroke-linecap="round" style="filter: drop-shadow(0 0 4px rgba(150, 170, 255, 0.75));">
+                <path d="M 156 388 C 157 356, 159 325, 160 294"/>
+                <path d="M 511 337 C 514 352, 517 367, 520 381"/>
+                <path d="M 1010 217 C 1010 206, 1010 195, 1010 184"/>
+              </g>
 
-          .featured-thoughts-section .featured-title h2 {
-            font-family: 'Playfair Display', 'Times New Roman', serif;
-            font-size: clamp(1.85rem, 4.2vw, 2.75rem);
-            font-weight: 500;
-            letter-spacing: 0.28em;
-            line-height: 1.45;
-            color: rgba(245, 230, 211, 0.96);
-            text-shadow: 0 0 24px rgba(255, 215, 160, 0.22);
-            margin: 0 0 0.85rem;
-            text-transform: none;
-            border: none !important;
-          }
+              <!-- 主线：银河光晕 / 亮核 / 流动光 -->
+              <path class="wf-main-soft" d="M 0 380 C 300 420, 640 300, 900 240 C 1040 215, 1120 190, 1200 150" fill="none" stroke="url(#wf-line-grad)" stroke-width="10" stroke-linecap="round" filter="url(#wf-soft-blur)"/>
+              <path class="wf-main-core" d="M 0 380 C 300 420, 640 300, 900 240 C 1040 215, 1120 190, 1200 150" fill="none" stroke="url(#wf-line-grad)" stroke-width="2.4" stroke-linecap="round"/>
+              <path class="wf-main-flow" d="M 0 380 C 300 420, 640 300, 900 240 C 1040 215, 1120 190, 1200 150" fill="none" stroke="#ffffff" stroke-width="3.6" stroke-linecap="round"/>
+            </svg>
 
-          .featured-thoughts-section .featured-title .fleuron-sm {
-            color: rgba(245, 230, 211, 0.55);
-            font-size: 1.15rem;
-            letter-spacing: 0.4em;
-            margin: 0.6rem 0 1rem;
-            border: none !important;
-          }
-
-          .featured-thoughts-section .featured-title p {
-            font-family: var(--font-serif), 'Playfair Display', Georgia, serif !important;
-            font-style: italic;
-            font-size: clamp(0.95rem, 1.6vw, 1.12rem) !important;
-            line-height: 1.9 !important;
-            letter-spacing: 0.08em;
-            color: rgba(255, 255, 255, 0.72) !important;
-            max-width: 36em;
-            margin-left: auto;
-            margin-right: auto;
-            border: none !important;
-          }
-
-          /* 卡片网格：留白呼吸感 */
-          .featured-thoughts-section .posts-grid,
-          .featured-thoughts-section #featured-posts {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
-            gap: clamp(1.75rem, 4vw, 2.75rem);
-            background: transparent !important;
-            border: none !important;
-            box-shadow: none !important;
-            padding: 0.5rem 0 0;
-          }
-
-          /* 毛玻璃卡片本体（JS 生成的子项） */
-          .featured-thoughts-section #featured-posts > * {
-            position: relative !important;
-            isolation: isolate;
-            overflow: hidden !important;
-            background: rgba(255, 255, 255, 0.06) !important;
-            backdrop-filter: blur(18px) saturate(140%);
-            -webkit-backdrop-filter: blur(18px) saturate(140%);
-            border: 1px solid rgba(255, 255, 255, 0.12) !important;
-            border-top-color: rgba(255, 255, 255, 0.12) !important;
-            border-radius: 22px !important;
-            box-shadow:
-              0 8px 32px rgba(0, 0, 0, 0.28),
-              inset 0 1px 0 rgba(255, 255, 255, 0.08) !important;
-            padding: clamp(1.6rem, 3.2vw, 2.15rem) !important;
-            transition: transform 0.35s ease, box-shadow 0.35s ease, border-color 0.35s ease;
-            color: rgba(255, 255, 255, 0.92) !important;
-          }
-
-          .featured-thoughts-section #featured-posts > *:hover {
-            transform: translateY(-6px);
-            border-color: rgba(255, 255, 255, 0.22) !important;
-            box-shadow:
-              0 18px 48px rgba(0, 0, 0, 0.38),
-              inset 0 1px 0 rgba(255, 255, 255, 0.12) !important;
-          }
-
-          /* 弥散光晕层（最底层） */
-          .featured-thoughts-section #featured-posts > *::before {
-            content: '';
-            position: absolute;
-            inset: -40% -20% auto;
-            height: 70%;
-            z-index: -1;
-            pointer-events: none;
-            border-radius: 50%;
-            filter: blur(42px);
-            opacity: 0.85;
-            transform: translateZ(0);
-          }
-
-          /* ① 粉紫 × 丁香紫 */
-          .featured-thoughts-section #featured-posts > *:nth-child(1)::before {
-            background:
-              radial-gradient(circle at 30% 40%, rgba(232, 160, 220, 0.72) 0%, transparent 55%),
-              radial-gradient(circle at 70% 60%, rgba(168, 130, 220, 0.65) 0%, transparent 60%);
-          }
-
-          /* ② 青蓝 × 冰蓝 */
-          .featured-thoughts-section #featured-posts > *:nth-child(2)::before {
-            background:
-              radial-gradient(circle at 35% 35%, rgba(120, 210, 230, 0.7) 0%, transparent 55%),
-              radial-gradient(circle at 75% 65%, rgba(140, 180, 255, 0.62) 0%, transparent 60%);
-          }
-
-          /* ③ 暖橙 × 肉粉 */
-          .featured-thoughts-section #featured-posts > *:nth-child(3)::before {
-            background:
-              radial-gradient(circle at 30% 40%, rgba(255, 180, 120, 0.7) 0%, transparent 55%),
-              radial-gradient(circle at 70% 60%, rgba(255, 170, 170, 0.58) 0%, transparent 60%);
-          }
-
-          /* 卡片内文字：亮白 / 香槟金 + 呼吸感 */
-          .featured-thoughts-section #featured-posts > *,
-          .featured-thoughts-section #featured-posts > * * {
-            border-color: transparent !important;
-          }
-
-          .featured-thoughts-section #featured-posts h2,
-          .featured-thoughts-section #featured-posts h3,
-          .featured-thoughts-section #featured-posts .post-title,
-          .featured-thoughts-section #featured-posts a {
-            color: rgba(245, 230, 211, 0.96) !important;
-            font-size: clamp(1.15rem, 2.1vw, 1.4rem) !important;
-            line-height: 1.65 !important;
-            letter-spacing: 0.04em;
-            text-decoration: none !important;
-            border: none !important;
-            background: none !important;
-            box-shadow: none !important;
-          }
-
-          .featured-thoughts-section #featured-posts p,
-          .featured-thoughts-section #featured-posts .post-excerpt,
-          .featured-thoughts-section #featured-posts .excerpt {
-            color: rgba(255, 255, 255, 0.78) !important;
-            font-size: clamp(0.95rem, 1.5vw, 1.05rem) !important;
-            line-height: 1.9 !important;
-            letter-spacing: 0.03em;
-            margin-top: 0.85rem;
-            border: none !important;
-          }
-
-          /* —— 1. 顶部提亮：主题 / 日期 → 香槟金亮白 + 柔和发光 —— */
-          .featured-thoughts-section #featured-posts time,
-          .featured-thoughts-section #featured-posts .post-date,
-          .featured-thoughts-section #featured-posts .post-category,
-          .featured-thoughts-section #featured-posts .category,
-          .featured-thoughts-section #featured-posts .tag,
-          .featured-thoughts-section #featured-posts .post-tag,
-          .featured-thoughts-section #featured-posts .topic,
-          .featured-thoughts-section #featured-posts .post-topic,
-          .featured-thoughts-section #featured-posts .post-label {
-            color: rgba(255, 248, 235, 0.98) !important;
-            font-size: 1.08rem !important;
-            font-weight: 500;
-            letter-spacing: 0.16em;
-            text-transform: uppercase;
-            text-shadow:
-              0 0 6px rgba(255, 255, 255, 0.55),
-              0 0 14px rgba(255, 215, 160, 0.55),
-              0 0 28px rgba(255, 230, 190, 0.28);
-            border: none !important;
-            background: none !important;
-          }
-
-          /* —— 2. 底部排版重构：阅读时长 / 中文结语 → 上下垂直排列 —— */
-          .featured-thoughts-section #featured-posts .post-meta,
-          .featured-thoughts-section #featured-posts .meta,
-          .featured-thoughts-section #featured-posts .post-footer {
-            display: flex !important;
-            flex-direction: column !important;
-            align-items: flex-start !important;
-            justify-content: flex-start !important;
-            flex-wrap: nowrap !important;
-            gap: 0.45rem !important;
-            margin-top: 1.35rem !important;
-            padding-top: 0.15rem;
-            border: none !important;
-            background: none !important;
-          }
-
-          /* 确保底部子项各自独占一行，并按「时长在上 / 中文在下」排序 */
-          .featured-thoughts-section #featured-posts .post-meta > *,
-          .featured-thoughts-section #featured-posts .meta > *,
-          .featured-thoughts-section #featured-posts .post-footer > * {
-            display: block !important;
-            width: auto !important;
-            max-width: 100%;
-          }
-
-          .featured-thoughts-section #featured-posts .reading-time,
-          .featured-thoughts-section #featured-posts .read-time,
-          .featured-thoughts-section #featured-posts .post-reading,
-          .featured-thoughts-section #featured-posts .minutes {
-            order: 1 !important;
-          }
-
-          .featured-thoughts-section #featured-posts .cn-title,
-          .featured-thoughts-section #featured-posts .post-cn,
-          .featured-thoughts-section #featured-posts .chinese-title,
-          .featured-thoughts-section #featured-posts .translation,
-          .featured-thoughts-section #featured-posts .post-subtitle {
-            order: 2 !important;
-          }
-
-          /* —— 3. 底部文字：亮白 × 粉紫渐变光感 + 呼吸感字距 —— */
-          .featured-thoughts-section #featured-posts .post-meta,
-          .featured-thoughts-section #featured-posts .meta,
-          .featured-thoughts-section #featured-posts .post-footer,
-          .featured-thoughts-section #featured-posts .reading-time,
-          .featured-thoughts-section #featured-posts .read-time,
-          .featured-thoughts-section #featured-posts .post-reading,
-          .featured-thoughts-section #featured-posts .minutes,
-          .featured-thoughts-section #featured-posts .cn-title,
-          .featured-thoughts-section #featured-posts .post-cn,
-          .featured-thoughts-section #featured-posts .chinese-title,
-          .featured-thoughts-section #featured-posts .translation,
-          .featured-thoughts-section #featured-posts .post-subtitle,
-          .featured-thoughts-section #featured-posts small {
-            font-size: 1.08rem !important;
-            letter-spacing: 0.12em !important;
-            line-height: 1.75 !important;
-            text-transform: none;
-            border: none !important;
-            box-shadow: none !important;
-          }
-
-          /* 阅读时长：通透亮白 + 微光 */
-          .featured-thoughts-section #featured-posts .reading-time,
-          .featured-thoughts-section #featured-posts .read-time,
-          .featured-thoughts-section #featured-posts .post-reading,
-          .featured-thoughts-section #featured-posts .minutes {
-            color: rgba(255, 252, 248, 0.92) !important;
-            background: none !important;
-            -webkit-text-fill-color: rgba(255, 252, 248, 0.92) !important;
-            text-shadow:
-              0 0 10px rgba(255, 255, 255, 0.35),
-              0 0 20px rgba(232, 180, 255, 0.22);
-          }
-
-          /* 中文结语：亮白 → 粉紫渐变光感 */
-          .featured-thoughts-section #featured-posts .cn-title,
-          .featured-thoughts-section #featured-posts .post-cn,
-          .featured-thoughts-section #featured-posts .chinese-title,
-          .featured-thoughts-section #featured-posts .translation,
-          .featured-thoughts-section #featured-posts .post-subtitle {
-            position: relative !important;
-            display: inline-block !important;
-            padding-left: 1.35em !important;
-            color: transparent !important;
-            background-image: linear-gradient(
-              115deg,
-              rgba(255, 255, 255, 0.98) 0%,
-              rgba(255, 230, 245, 0.96) 35%,
-              rgba(232, 175, 255, 0.95) 68%,
-              rgba(245, 220, 255, 0.98) 100%
-            ) !important;
-            -webkit-background-clip: text !important;
-            background-clip: text !important;
-            -webkit-text-fill-color: transparent !important;
-            filter: drop-shadow(0 0 8px rgba(232, 160, 220, 0.35));
-          }
-
-          /* 中文结语旁：纯 CSS 白色发光小星星 */
-          .featured-thoughts-section #featured-posts .cn-title::before,
-          .featured-thoughts-section #featured-posts .post-cn::before,
-          .featured-thoughts-section #featured-posts .chinese-title::before,
-          .featured-thoughts-section #featured-posts .translation::before,
-          .featured-thoughts-section #featured-posts .post-subtitle::before {
-            content: '✦' !important;
-            position: absolute !important;
-            left: 0 !important;
-            top: 50% !important;
-            transform: translateY(-52%) !important;
-            display: inline-block !important;
-            font-size: 0.78em !important;
-            line-height: 1 !important;
-            letter-spacing: 0 !important;
-            color: rgba(255, 255, 255, 0.95) !important;
-            background: none !important;
-            -webkit-text-fill-color: rgba(255, 255, 255, 0.95) !important;
-            background-image: none !important;
-            -webkit-background-clip: border-box !important;
-            background-clip: border-box !important;
-            filter: none !important;
-            text-shadow:
-              0 0 6px rgba(255, 255, 255, 0.95),
-              0 0 14px rgba(255, 220, 255, 0.75),
-              0 0 22px rgba(220, 170, 255, 0.45);
-            pointer-events: none;
-          }
-
-          /* 底部元数据容器内的子元素：统一放大字距，避免被旧规则压暗 */
-          .featured-thoughts-section #featured-posts .post-meta *,
-          .featured-thoughts-section #featured-posts .meta *,
-          .featured-thoughts-section #featured-posts .post-footer * {
-            font-size: 1.08rem !important;
-            letter-spacing: 0.12em !important;
-          }
-
-         /* 底部结语样式：亮粉色渐变 + 呼吸感 */
-.featured-thoughts-section #featured-posts .post-meta small,
-.featured-thoughts-section #featured-posts .post-footer small {
-    display: block !important;
-    position: relative !important;
-    padding-left: 0 !important;
-    margin-top: 8px !important;
-    color: transparent !important;
-    background-image: linear-gradient(115deg, rgba(255,255,255, 0.98) 0%, rgba(255, 230, 245, 0.96) 35%, rgba(232, 175, 255, 0.95) 68%) !important;
-    -webkit-background-clip: text !important;
-    background-clip: text !important;
-    font-size: 1.15rem !important;
-    font-weight: 500 !important;
-    letter-spacing: 0.1em !important;
-}
-
-/* 加发光小星星 */
-.featured-thoughts-section #featured-posts .post-meta small::before {
-    content: "✦ ";
-    color: rgba(255, 255, 255, 0.9);
-    font-size: 1.2rem;
-    position: absolute;
-    left: -1.5em;
-    top: 0.1em;
-    text-shadow: 0 0 10px rgba(255, 255, 255, 0.6);
-}
-
-/* 干掉顶部彩条和多余方块 */
-.featured-thoughts-section #featured-posts .bar,
-.featured-thoughts-section #featured-posts .accent,
-.featured-thoughts-section #featured-posts .divider,
-.featured-thoughts-section #featured-posts .card-border,
-.featured-thoughts-section #featured-posts .card-bar,
-.featured-thoughts-section #featured-posts .card-tag {
-    display: none !important;
-}
-          /* 用 ::after 画一条极细（1px）半透明白色渐变顶线，替代彩条 */
-          .featured-thoughts-section #featured-posts > *::after {
-            content: '' !important;
-            display: block !important;
-            position: absolute !important;
-            top: 0 !important;
-            left: 12% !important;
-            right: 12% !important;
-            height: 1px !important;
-            max-height: 1px !important;
-            opacity: 1 !important;
-            visibility: visible !important;
-            background: linear-gradient(
-              90deg,
-              transparent 0%,
-              rgba(255, 255, 255, 0.38) 50%,
-              transparent 100%
-            ) !important;
-            border: none !important;
-            box-shadow: none !important;
-            border-radius: 0 !important;
-            z-index: 2;
-            pointer-events: none;
-            filter: none !important;
-            transform: none !important;
-          }
-
-          /* View All 按钮：极简香槟金 */
-          .featured-thoughts-section .view-all-wrap {
-            text-align: center;
-            margin-top: clamp(2.5rem, 5vw, 3.75rem);
-          }
-
-          .featured-thoughts-section .view-all-link {
-            display: inline-block;
-            text-decoration: none !important;
-            color: rgba(245, 230, 211, 0.92) !important;
-            font-family: 'Playfair Display', 'Times New Roman', serif;
-            font-size: clamp(0.95rem, 1.5vw, 1.08rem);
-            letter-spacing: 0.22em;
-            line-height: 1.8;
-            padding: 0.85rem 1.85rem;
-            border-radius: 999px;
-            border: 1px solid rgba(245, 230, 211, 0.28) !important;
-            background: rgba(255, 255, 255, 0.05);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            box-shadow: none !important;
-            transition: color 0.25s ease, border-color 0.25s ease, background 0.25s ease;
-          }
-
-          .featured-thoughts-section .view-all-link:hover {
-            color: #fff !important;
-            border-color: rgba(255, 255, 255, 0.45) !important;
-            background: rgba(255, 255, 255, 0.1);
-          }
-
-          @media (max-width: 640px) {
-            .featured-thoughts-section #featured-posts > *::before {
-              filter: blur(32px);
-              opacity: 0.75;
-            }
-
-            .featured-thoughts-section #featured-posts time,
-            .featured-thoughts-section #featured-posts .post-date,
-            .featured-thoughts-section #featured-posts .post-category,
-            .featured-thoughts-section #featured-posts .category,
-            .featured-thoughts-section #featured-posts .tag,
-            .featured-thoughts-section #featured-posts .post-tag,
-            .featured-thoughts-section #featured-posts .topic,
-            .featured-thoughts-section #featured-posts .post-topic,
-            .featured-thoughts-section #featured-posts .post-label {
-              font-size: 1rem !important;
-              letter-spacing: 0.12em;
-            }
-
-            .featured-thoughts-section #featured-posts .post-meta,
-            .featured-thoughts-section #featured-posts .meta,
-            .featured-thoughts-section #featured-posts .post-footer,
-            .featured-thoughts-section #featured-posts .reading-time,
-            .featured-thoughts-section #featured-posts .read-time,
-            .featured-thoughts-section #featured-posts .post-reading,
-            .featured-thoughts-section #featured-posts .minutes,
-            .featured-thoughts-section #featured-posts .cn-title,
-            .featured-thoughts-section #featured-posts .post-cn,
-            .featured-thoughts-section #featured-posts .chinese-title,
-            .featured-thoughts-section #featured-posts .translation,
-            .featured-thoughts-section #featured-posts .post-subtitle,
-            .featured-thoughts-section #featured-posts small {
-              font-size: 1rem !important;
-              letter-spacing: 0.1em !important;
-            }
-          }
-        </style>
-
-        <div class="container-wide">
-          <div class="featured-title">
-            <h2 data-i18n="featuredTitle">近期随想</h2>
-            <p class="fleuron-sm">❦</p>
-            <p data-i18n="featuredSubtitle">关于语言、文学，以及其间的空白</p>
-          </div>
-          <div class="posts-grid" id="featured-posts">
-            <!-- Rendered by JS -->
-          </div>
-          <div class="view-all-wrap">
-            <a href="thoughts.html" class="view-all-link" data-i18n="viewAll">
-              查看全部随想 →
+            <!-- 节点一：全球洞察 -->
+            <a href="marketing.html" class="wf-step n1">
+              <span class="wf-float">
+                <span class="wf-planet"><span class="wf-emoji">🌍</span></span>
+                <span class="wf-text">
+                  <span class="wf-node-title">第一步：全球洞察</span>
+                  <span class="wf-node-desc">一键生成海外爆款文案</span>
+                  <span class="wf-node-cta">去洞察市场 <span class="wf-cta-arrow">→</span></span>
+                </span>
+              </span>
             </a>
+
+            <!-- 节点二：商务沟通 -->
+            <a href="./chat.html" class="wf-step n2">
+              <span class="wf-float">
+                <span class="wf-planet"><span class="wf-emoji">📧</span></span>
+                <span class="wf-text">
+                  <span class="wf-node-title">第二步：商务沟通</span>
+                  <span class="wf-node-desc">跨越语境障碍促成订单</span>
+                  <span class="wf-node-cta">去写邮件 <span class="wf-cta-arrow">→</span></span>
+                </span>
+              </span>
+            </a>
+
+            <!-- 节点三：语言进化 -->
+            <a href="corpus.html" class="wf-step n3">
+              <span class="wf-float">
+                <span class="wf-planet"><span class="wf-emoji">🧠</span></span>
+                <span class="wf-text">
+                  <span class="wf-node-title">第三步：语言进化</span>
+                  <span class="wf-node-desc">实战中让AI越用越聪明</span>
+                  <span class="wf-node-cta">去查词汇 <span class="wf-cta-arrow">→</span></span>
+                </span>
+              </span>
+            </a>
+
+            <!-- 散落的漂浮发光粒子 -->
+            <span class="wf-particle" style="left: 5%; top: 15%; --s: 3px; --dur: 3.2s; --d: 0s;"></span>
+            <span class="wf-particle pink" style="left: 25%; top: 10%; --s: 4px; --dur: 3.8s; --d: 0.8s;"></span>
+            <span class="wf-particle" style="left: 38.3%; top: 21.7%; --s: 2px; --dur: 2.8s; --d: 1.4s;"></span>
+            <span class="wf-particle gold" style="left: 53.3%; top: 10%; --s: 3px; --dur: 3.5s; --d: 0.4s;"></span>
+            <span class="wf-particle" style="left: 60%; top: 66.7%; --s: 2px; --dur: 2.6s; --d: 1.1s;"></span>
+            <span class="wf-particle pink" style="left: 71.7%; top: 50%; --s: 3px; --dur: 3.4s; --d: 2s;"></span>
+            <span class="wf-particle" style="left: 90%; top: 53.3%; --s: 4px; --dur: 4s; --d: 0.6s;"></span>
+            <span class="wf-particle" style="left: 10%; top: 86.7%; --s: 2px; --dur: 3s; --d: 1.7s;"></span>
+            <span class="wf-particle gold" style="left: 35.8%; top: 95.8%; --s: 3px; --dur: 3.6s; --d: 0.2s;"></span>
+            <span class="wf-particle" style="left: 80%; top: 80%; --s: 2px; --dur: 2.9s; --d: 1.2s;"></span>
           </div>
         </div>
       </section>
@@ -1179,7 +1144,7 @@
           btn.setAttribute('aria-pressed', active ? 'true' : 'false');
         });
 
-        renderFeatured(lang);
+// renderFeatured(lang);
         localStorage.setItem(STORAGE_KEY, lang);
       }
 
@@ -1926,6 +1891,29 @@ if (intersects.length > 0) {
 <footer class="fixed-footer" data-i18n="fixedFooter">
   刘凯 · 天津科技大学 外国语学院 · 2025级本科生
 </footer>
+<script>
+  /* 工作流区块：滚动进入视口后，主线自左向右生长 + 三个节点依次上浮淡入 */
+  document.addEventListener("DOMContentLoaded", () => {
+      const track = document.getElementById('wf-track');
+      if (!track) return;
+
+      const activate = () => {
+          track.classList.add('wf-in', 'wf-run');
+          observer.disconnect();
+      };
+
+      const observer = new IntersectionObserver((entries) => {
+          if (entries[0] && entries[0].isIntersecting) activate();
+      }, { threshold: 0.18 });
+
+      /* 页面加载时若已在视口内，立即启动流星划线 */
+      if (track.getBoundingClientRect().top < window.innerHeight * 0.85) {
+          activate();
+      } else {
+          observer.observe(track);
+      }
+  });
+  </script>
 </body>
 <script>
   document.addEventListener("DOMContentLoaded", () => {

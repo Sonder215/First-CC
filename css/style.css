@@ -1230,6 +1230,32 @@ hr.fleuron::after {
 }
 
 /* ============================================================
+   WORKFLOW NODE LINKS — click reliability
+   The 3D parallax layer uses preserve-3d, which makes browsers
+   depth-sort children instead of honoring z-index (that is why
+   z-index fixes alone never worked). Flatten it back: the layer
+   itself still tilts, but hit-testing / z-index behave normally.
+   ============================================================ */
+.parallax-layer {
+  transform-style: flat !important;
+}
+
+/* Step links: clickable above all decorative layers (still below .nav, z 100) */
+.wf-track a.wf-step,
+.wf-track a {
+  pointer-events: auto !important;
+  cursor: pointer !important;
+  z-index: 60 !important;
+}
+
+/* Decorative layers stay click-through */
+.wf-svg,
+.wf-particle,
+.wf-planet::after {
+  pointer-events: none !important;
+}
+
+/* ============================================================
    PRINT STYLES
    ============================================================ */
 @media print {
