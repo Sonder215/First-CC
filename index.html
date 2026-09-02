@@ -610,14 +610,16 @@
       opacity: 1;
       transform: translateY(0);
     }
-    .wf-track.wf-in .wf-step.n1 { transition-delay: 0.4s; }
-    .wf-track.wf-in .wf-step.n2 { transition-delay: 0.75s; }
-    .wf-track.wf-in .wf-step.n3 { transition-delay: 1.1s; }
+    .wf-track.wf-in .wf-step.n1 { transition-delay: 0.35s; }
+    .wf-track.wf-in .wf-step.n2 { transition-delay: 0.65s; }
+    .wf-track.wf-in .wf-step.n3 { transition-delay: 0.95s; }
+    .wf-track.wf-in .wf-step.n4 { transition-delay: 1.25s; }
 
-    /* 三节点沿倾斜主线错落分布 */
-    .wf-step.n1 { left: 9.67%;  top: 34.33%; }
-    .wf-step.n2 { left: 31.67%; top: 63.5%; }
-    .wf-step.n3 { left: 64.5%;  top: 16%; }
+    /* 四节点沿倾斜主线蜿蜒错落分布（蛇形星轨） */
+    .wf-step.n1 { left: 1%;    top: 10%; }
+    .wf-step.n2 { left: 26%;   top: 52%; }
+    .wf-step.n3 { left: 48%;   top: 64%; }
+    .wf-step.n4 { left: 64.5%; top: 12%; }
 
     .wf-float {
       display: flex;
@@ -626,16 +628,17 @@
       animation: wfFloat 7s ease-in-out infinite;
     }
     .wf-step.n1 .wf-float { flex-direction: row; }
-    .wf-step.n2 .wf-float {
+    .wf-step.n2 .wf-float { flex-direction: row; animation-delay: -1.6s; }
+    .wf-step.n3 .wf-float {
       flex-direction: column;
       gap: 13px;
       text-align: center;
-      animation-delay: -2.3s;
+      animation-delay: -3.2s;
     }
-    .wf-step.n3 .wf-float {
+    .wf-step.n4 .wf-float {
       flex-direction: row-reverse;
       text-align: right;
-      animation-delay: -4.4s;
+      animation-delay: -4.8s;
     }
 
     @keyframes wfFloat {
@@ -667,9 +670,10 @@
         inset 5px 7px 16px rgba(255, 255, 255, 0.22);
       transition: box-shadow 0.5s ease;
     }
-    .wf-step.n1 .wf-planet { --pc: 140, 170, 255; }
-    .wf-step.n2 .wf-planet { --pc: 205, 150, 255; }
-    .wf-step.n3 .wf-planet { --pc: 120, 225, 205; }
+    .wf-step.n1 .wf-planet { --pc: 255, 205, 140; } /* 香槟金：听译 */
+    .wf-step.n2 .wf-planet { --pc: 140, 170, 255; } /* 冰蓝：全球洞察 */
+    .wf-step.n3 .wf-planet { --pc: 205, 150, 255; } /* 星紫：商务沟通 */
+    .wf-step.n4 .wf-planet { --pc: 120, 225, 205; } /* 青绿：语言进化 */
 
     /* 星球环 */
     .wf-planet::after {
@@ -705,6 +709,14 @@
       margin-bottom: 7px;
       transition: color 0.35s ease, text-shadow 0.35s ease;
     }
+    /* 新增节点（听译）标题：香槟金渐变，与区块主标题同源 */
+    .wf-step.n1 .wf-node-title {
+      background: linear-gradient(105deg, #f5e6c8 0%, #ffe9b0 30%, #fffef5 56%, #dce8f6 100%);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: transparent;
+    }
     .wf-node-desc {
       display: block;
       font-size: 0.88rem;
@@ -732,6 +744,9 @@
       .wf-step:hover .wf-node-title {
         color: #fff;
         text-shadow: 0 0 18px rgba(245, 230, 200, 0.5);
+      }
+      .wf-step.n1:hover .wf-node-title {
+        filter: drop-shadow(0 0 12px rgba(245, 230, 200, 0.85));
       }
       .wf-step:hover .wf-node-cta { color: #fff; }
       .wf-step:hover .wf-cta-arrow { transform: translateX(5px); }
@@ -840,7 +855,8 @@
       .wf-step,
       .wf-step.n1,
       .wf-step.n2,
-      .wf-step.n3 {
+      .wf-step.n3,
+      .wf-step.n4 {
         position: static;
         width: 100%;
         text-align: center;
@@ -848,7 +864,9 @@
       .wf-step + .wf-step { margin-top: 56px; }
       .wf-float,
       .wf-step.n1 .wf-float,
-      .wf-step.n3 .wf-float {
+      .wf-step.n2 .wf-float,
+      .wf-step.n3 .wf-float,
+      .wf-step.n4 .wf-float {
         flex-direction: column;
         align-items: center;
         gap: 14px;
@@ -950,11 +968,11 @@
         </div>
     </div>
 
-      <!-- AI 跨文化出海工作流：树状流星 -->
+      <!-- AI 跨文化工作流：树状流星 -->
       <section class="section">
         <div class="wf-container">
-          <h2 class="wf-title">AI 跨文化出海工作流</h2>
-          <p class="wf-subtitle">从洞察全球市场，到促成真实订单，再到自我能力进化</p>
+          <h2 class="wf-title">AI 跨文化工作流</h2>
+          <p class="wf-subtitle">从听懂世界，到让世界听懂你</p>
 
           <div class="wf-track" id="wf-track">
             <svg class="wf-svg" viewBox="0 0 1200 600" preserveAspectRatio="none" aria-hidden="true">
@@ -970,11 +988,12 @@
                 </filter>
               </defs>
 
-              <!-- 三根分支细线 -->
+              <!-- 四根分支细线 -->
               <g class="wf-branches" fill="none" stroke="rgba(205, 215, 255, 0.6)" stroke-width="1.2" stroke-linecap="round" style="filter: drop-shadow(0 0 4px rgba(150, 170, 255, 0.75));">
-                <path d="M 156 388 C 157 356, 159 325, 160 294"/>
-                <path d="M 511 337 C 514 352, 517 367, 520 381"/>
-                <path d="M 1010 217 C 1010 206, 1010 195, 1010 184"/>
+                <path d="M 59 148 C 52 225, 20 320, 5 374"/>
+                <path d="M 359 400 C 360 406, 361 410, 362 413"/>
+                <path d="M 727 288 C 727 322, 727 356, 727 382"/>
+                <path d="M 1027 207 C 1027 192, 1027 176, 1027 161"/>
               </g>
 
               <!-- 主线：银河光晕 / 亮核 / 流动光 -->
@@ -983,8 +1002,20 @@
               <path class="wf-main-flow" d="M 0 380 C 300 420, 640 300, 900 240 C 1040 215, 1120 190, 1200 150" fill="none" stroke="#ffffff" stroke-width="3.6" stroke-linecap="round"/>
             </svg>
 
-            <!-- 节点一：全球洞察 -->
-            <a href="marketing.html" class="wf-step n1">
+            <!-- 节点一：听译 · 跨文化理解 -->
+            <a href="translation.html" class="wf-step n1">
+              <span class="wf-float">
+                <span class="wf-planet"><span class="wf-emoji">🔊</span></span>
+                <span class="wf-text">
+                  <span class="wf-node-title">听译 · 跨文化理解</span>
+                  <span class="wf-node-desc">实时语音识别与双语翻译</span>
+                  <span class="wf-node-cta">去 AI 同传 <span class="wf-cta-arrow">→</span></span>
+                </span>
+              </span>
+            </a>
+
+            <!-- 节点二：全球洞察 -->
+            <a href="marketing.html" class="wf-step n2">
               <span class="wf-float">
                 <span class="wf-planet"><span class="wf-emoji">🌍</span></span>
                 <span class="wf-text">
@@ -995,8 +1026,8 @@
               </span>
             </a>
 
-            <!-- 节点二：商务沟通 -->
-            <a href="./chat.html" class="wf-step n2">
+            <!-- 节点三：商务沟通 -->
+            <a href="./chat.html" class="wf-step n3">
               <span class="wf-float">
                 <span class="wf-planet"><span class="wf-emoji">📧</span></span>
                 <span class="wf-text">
@@ -1007,8 +1038,8 @@
               </span>
             </a>
 
-            <!-- 节点三：语言进化 -->
-            <a href="corpus.html" class="wf-step n3">
+            <!-- 节点四：语言进化 -->
+            <a href="corpus.html" class="wf-step n4">
               <span class="wf-float">
                 <span class="wf-planet"><span class="wf-emoji">🧠</span></span>
                 <span class="wf-text">
@@ -1020,11 +1051,11 @@
             </a>
 
             <!-- 散落的漂浮发光粒子 -->
-            <span class="wf-particle" style="left: 5%; top: 15%; --s: 3px; --dur: 3.2s; --d: 0s;"></span>
-            <span class="wf-particle pink" style="left: 25%; top: 10%; --s: 4px; --dur: 3.8s; --d: 0.8s;"></span>
+            <span class="wf-particle" style="left: 3%; top: 30%; --s: 3px; --dur: 3.2s; --d: 0s;"></span>
+            <span class="wf-particle pink" style="left: 20%; top: 5%; --s: 4px; --dur: 3.8s; --d: 0.8s;"></span>
             <span class="wf-particle" style="left: 38.3%; top: 21.7%; --s: 2px; --dur: 2.8s; --d: 1.4s;"></span>
             <span class="wf-particle gold" style="left: 53.3%; top: 10%; --s: 3px; --dur: 3.5s; --d: 0.4s;"></span>
-            <span class="wf-particle" style="left: 60%; top: 66.7%; --s: 2px; --dur: 2.6s; --d: 1.1s;"></span>
+            <span class="wf-particle" style="left: 46%; top: 78%; --s: 2px; --dur: 2.6s; --d: 1.1s;"></span>
             <span class="wf-particle pink" style="left: 71.7%; top: 50%; --s: 3px; --dur: 3.4s; --d: 2s;"></span>
             <span class="wf-particle" style="left: 90%; top: 53.3%; --s: 4px; --dur: 4s; --d: 0.6s;"></span>
             <span class="wf-particle" style="left: 10%; top: 86.7%; --s: 2px; --dur: 3s; --d: 1.7s;"></span>
